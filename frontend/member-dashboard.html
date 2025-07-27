@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Member Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="member-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="member-commitment.html"><i class="fas fa-edit"></i>Update Commitment</a></li>
+            <li><a href="member-loans.html"><i class="fas fa-hand-holding-usd"></i>Apply for Loan</a></li>
+            <li><a href="member-my-loans.html"><i class="fas fa-credit-card"></i>My Loans</a></li>
+            <li><a href="member-transactions.html"><i class="fas fa-history"></i>Transaction History</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i>Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">M</div>
+                <span class="user-name" id="userName">Member Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Charts Section -->
+        <div id="chartsSection" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Savings Progress
+                </h2>
+                <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="savingsProgressChart" width="400" height="280"></canvas>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-doughnut"></i>
+                    Monthly Breakdown
+                </h2>
+                <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="monthlyBreakdownChart" width="280" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Transactions -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i>
+                Recent Transactions
+            </h2>
+            <table class="table" id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-calendar" style="margin-right: 8px;"></i>Date</th>
+                        <th><i class="fas fa-tag" style="margin-right: 8px;"></i>Type</th>
+                        <th><i class="fas fa-money-bill" style="margin-right: 8px;"></i>Amount</th>
+                        <th><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                    <!-- Transactions will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/member-dashboard.js"></script>
+</body>
+</html>

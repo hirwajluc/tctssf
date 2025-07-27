@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members Summary - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary { border-left-color: #667eea; }
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.warning { border-left-color: #ffc107; }
+        .stat-card.danger { border-left-color: #dc3545; }
+        .stat-card.info { border-left-color: #17a2b8; }
+
+        .stat-card .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); }
+        .stat-card.info .stat-icon { background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); }
+
+        .stat-card .stat-content {
+            flex: 1;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Action Cards */
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .action-card .action-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .action-card p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* Overview Cards */
+        .overview-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .overview-card .overview-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .overview-card.savings .overview-icon {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .overview-card.social .overview-icon {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+
+        .overview-card.loans .overview-icon {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        }
+
+        .overview-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .overview-card .overview-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        /* Search Section */
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 2;
+        }
+
+        .search-input {
+            padding-left: 40px !important;
+        }
+
+        /* Responsive Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .table thead th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .table tbody td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Account Badge */
+        .account-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        /* Member Info */
+        .member-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        /* Amount Cells */
+        .amount-cell {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .amount-cell.positive {
+            color: #28a745;
+        }
+
+        .amount-cell.negative {
+            color: #dc3545;
+        }
+
+        .amount-cell.neutral {
+            color: #6c757d;
+        }
+
+        .amount-cell.total-deduction {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+
+        /* Form Elements */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Button Improvements */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #667eea;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .empty-state p {
+            margin-bottom: 25px;
+            color: #6c757d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .action-card,
+            .overview-card {
+                min-height: 250px;
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .table {
+                min-width: 800px;
+            }
+
+            .amount-cell.total-deduction {
+                padding: 6px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card .stat-value {
+                font-size: 24px;
+            }
+
+            .action-card .action-icon,
+            .overview-card .overview-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .table {
+                min-width: 600px;
+            }
+
+            .overview-card .overview-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-coins"></i>
+            <h2>Treasurer Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="treasurer-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="treasurer-loans.html"><i class="fas fa-hand-holding-usd"></i>Loan Approvals</a></li>
+            <li><a href="treasurer-salary-deductions.html"><i class="fas fa-money-bill-wave"></i>Salary Deductions</a></li>
+            <li><a href="treasurer-members.html" class="active"><i class="fas fa-users"></i>Members Summary</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-users"></i>Members Summary</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">T</div>
+                <span class="user-name" id="userName">Treasurer Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Charts Section -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Search Members</h3>
+                <p>Find members by name or account number</p>
+                <div style="width: 100%; max-width: 350px; margin-bottom: 20px;">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="form-input search-input" 
+                               placeholder="Search by name or account number..." 
+                               onkeyup="filterMembers()">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i>
+                    Export to CSV
+                </button>
+            </div>
+            
+            <div class="overview-card savings">
+                <div class="overview-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h4>Financial Overview</h4>
+                <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: #28a745; font-weight: 600; margin-bottom: 5px;">
+                            <i class="fas fa-piggy-bank"></i> Total Savings
+                        </div>
+                        <div id="totalSavingsOverview" style="font-size: 20px; font-weight: bold; color: #28a745;">RWF 0</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: #ffc107; font-weight: 600; margin-bottom: 5px;">
+                            <i class="fas fa-hand-holding-heart"></i> Social Funds
+                        </div>
+                        <div id="totalSocialOverview" style="font-size: 20px; font-weight: bold; color: #ffc107;">RWF 0</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; color: #dc3545; font-weight: 600; margin-bottom: 5px;">
+                            <i class="fas fa-credit-card"></i> Loan Payments
+                        </div>
+                        <div id="totalLoansOverview" style="font-size: 20px; font-weight: bold; color: #dc3545;">RWF 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Members Table -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-table"></i>
+                Members Financial Summary
+            </h2>
+            <div class="table-container">
+                <table class="table" id="membersTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-id-card" style="margin-right: 8px;"></i>Account #</th>
+                            <th><i class="fas fa-user" style="margin-right: 8px;"></i>Member Name</th>
+                            <th><i class="fas fa-piggy-bank" style="margin-right: 8px;"></i>Monthly Savings</th>
+                            <th><i class="fas fa-wallet" style="margin-right: 8px;"></i>Current Balance</th>
+                            <th><i class="fas fa-hand-holding-heart" style="margin-right: 8px;"></i>Social Contribution</th>
+                            <th><i class="fas fa-credit-card" style="margin-right: 8px;"></i>Loan Balance</th>
+                            <th><i class="fas fa-money-bill" style="margin-right: 8px;"></i>Monthly Loan Payment</th>
+                            <th><i class="fas fa-calculator" style="margin-right: 8px;"></i>Total Monthly Deduction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <!-- Table content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-users-slash"></i>
+                <h3>No Members Found</h3>
+                <p>No active members match your search criteria.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        let allMembers = [];
+        
+        if (!token || user.role !== 'treasurer') {
+            window.location.href = '/';
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            loadMembers();
+        });
+        
+        // Update user info in header
+        function updateUserInfo() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user.first_name && user.last_name) {
+                userName.textContent = `${user.first_name} ${user.last_name}`;
+                userAvatar.textContent = user.first_name.charAt(0).toUpperCase();
+            }
+        }
+        
+        // Load members data
+        async function loadMembers() {
+            try {
+                const response = await apiCall('/treasurer/members-summary');
+                
+                allMembers = Array.isArray(response) ? response : [];
+                displayMembers(allMembers);
+                updateSummaryCards(allMembers);
+                updateOverviewCards(allMembers);
+                
+            } catch (error) {
+                showError('Error loading members: ' + error.message);
+            }
+        }
+        
+        // Create stats cards
+        function updateSummaryCards(members) {
+            const totalMembers = members.length;
+            const totalMonthlySavings = members.reduce((sum, member) => sum + member.monthly_commitment, 0);
+            const totalSocialContrib = members.reduce((sum, member) => sum + 5000, 0); // Fixed 5000 per member
+            const totalLoanPayments = members.reduce((sum, member) => sum + member.monthly_loan_payment, 0);
+            const totalDeductions = members.reduce((sum, member) => sum + member.total_monthly_deduction, 0);
+            
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const statsCards = [
+                {
+                    title: 'Total Members',
+                    value: totalMembers,
+                    icon: 'fas fa-users',
+                    color: 'primary'
+                },
+                {
+                    title: 'Monthly Savings',
+                    value: 'RWF ' + formatNumber(totalMonthlySavings),
+                    icon: 'fas fa-piggy-bank',
+                    color: 'success'
+                },
+                {
+                    title: 'Social Contributions',
+                    value: 'RWF ' + formatNumber(totalSocialContrib),
+                    icon: 'fas fa-hand-holding-heart',
+                    color: 'warning'
+                },
+                {
+                    title: 'Monthly Loan Payments',
+                    value: 'RWF ' + formatNumber(totalLoanPayments),
+                    icon: 'fas fa-credit-card',
+                    color: 'info'
+                },
+                {
+                    title: 'Total Monthly Deductions',
+                    value: 'RWF ' + formatNumber(totalDeductions),
+                    icon: 'fas fa-calculator',
+                    color: 'danger'
+                }
+            ];
+            
+            statsGrid.innerHTML = statsCards.map(card => `
+                <div class="stat-card ${card.color}">
+                    <div class="stat-icon">
+                        <i class="${card.icon}"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">${card.value}</div>
+                        <div class="stat-label">${card.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Update overview cards
+        function updateOverviewCards(members) {
+            const totalSavings = members.reduce((sum, member) => sum + member.current_balance, 0);
+            const totalSocial = members.reduce((sum, member) => sum + member.social_contributions, 0);
+            const totalLoans = members.reduce((sum, member) => sum + member.monthly_loan_payment, 0);
+            
+            document.getElementById('totalSavingsOverview').textContent = 'RWF ' + formatNumber(totalSavings);
+            document.getElementById('totalSocialOverview').textContent = 'RWF ' + formatNumber(totalSocial);
+            document.getElementById('totalLoansOverview').textContent = 'RWF ' + formatNumber(totalLoans);
+        }
+        
+        // Display members in table
+        function displayMembers(members) {
+            const tbody = document.getElementById('membersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const tableContainer = document.querySelector('.table-container');
+            
+            if (!members || members.length === 0) {
+                tbody.innerHTML = '';
+                tableContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            tableContainer.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = members.map(member => `
+                <tr>
+                    <td>
+                        <span class="account-badge">${member.account_number}</span>
+                    </td>
+                    <td>
+                        <div class="member-info">
+                            <span class="member-name">${member.name}</span>
+                        </div>
+                    </td>
+                    <td class="amount-cell positive">
+                        RWF ${formatNumber(member.monthly_commitment)}
+                    </td>
+                    <td class="amount-cell positive">
+                        RWF ${formatNumber(member.current_balance)}
+                    </td>
+                    <td class="amount-cell positive">
+                        RWF ${formatNumber(member.social_contributions)}
+                    </td>
+                    <td class="amount-cell ${member.total_loan_balance > 0 ? 'negative' : 'neutral'}">
+                        RWF ${formatNumber(member.total_loan_balance)}
+                    </td>
+                    <td class="amount-cell ${member.monthly_loan_payment > 0 ? 'negative' : 'neutral'}">
+                        RWF ${formatNumber(member.monthly_loan_payment)}
+                    </td>
+                    <td class="amount-cell total-deduction">
+                        RWF ${formatNumber(member.total_monthly_deduction)}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Filter members based on search
+        function filterMembers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredMembers = allMembers.filter(member => 
+                member.name.toLowerCase().includes(searchTerm) ||
+                member.account_number.toLowerCase().includes(searchTerm)
+            );
+            
+            displayMembers(filteredMembers);
+            updateSummaryCards(filteredMembers);
+            updateOverviewCards(filteredMembers);
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            const headers = [
+                'Account Number', 'Member Name', 'Monthly Savings', 'Current Balance',
+                'Social Contributions', 'Loan Balance', 'Monthly Loan Payment', 'Total Monthly Deduction'
+            ];
+            
+            const csvContent = [
+                headers.join(','),
+                ...allMembers.map(member => [
+                    member.account_number,
+                    `"${member.name}"`,
+                    member.monthly_commitment,
+                    member.current_balance,
+                    member.social_contributions,
+                    member.total_loan_balance,
+                    member.monthly_loan_payment,
+                    member.total_monthly_deduction
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `members_summary_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showSuccess('Members summary exported successfully');
+        }
+        
+        // Utility functions
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+    </script>
+</body>
+</html>

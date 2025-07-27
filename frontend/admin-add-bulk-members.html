@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Import Members - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .file-drop-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-drop-area.dragover {
+            border-color: #4299e1;
+            background-color: #ebf8ff;
+            transform: scale(1.02);
+        }
+        
+        .file-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 8px;
+            height: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(45deg, rgba(255,255,255,.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.2) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+            animation: progress-bar-stripes 1s linear infinite;
+        }
+        
+        @keyframes progress-bar-stripes {
+            0% { background-position: 1rem 0; }
+            100% { background-position: 0 0; }
+        }
+        
+        .success-row {
+            background-color: #f0fff4;
+            border-left: 4px solid #48bb78;
+        }
+        
+        .error-row {
+            background-color: #fffbf0;
+            border-left: 4px solid #f56565;
+        }
+        
+        .template-instructions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .template-instructions h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .instruction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .instruction-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+        }
+        
+        .summary-card.total { border-left-color: #667eea; }
+        .summary-card.success { border-left-color: #48bb78; }
+        .summary-card.error { border-left-color: #f56565; }
+        .summary-card.rate { border-left-color: #ed8936; }
+        
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table-content table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table-content th,
+        .table-content td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table-content th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+        }
+        
+        .hidden { display: none !important; }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e0;
+            color: #4a5568;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline:hover {
+            background: #f7fafc;
+            border-color: #a0aec0;
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Admin Portal</h2>
+            <p class="subtitle">System Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="admin-create-member.html"><i class="fas fa-user-plus"></i>Create Member</a></li>
+            <li><a href="admin-members.html" class="active"><i class="fas fa-users"></i>Member List</a></li>
+            <li><a href="admin-loans.html"><i class="fas fa-clock"></i>Pending Loans</a></li>
+            <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i>Reports</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-upload"></i>Bulk Import Members</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span class="user-name" id="userName">Admin Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Instructions Section -->
+        <div class="template-instructions">
+            <h3><i class="fas fa-info-circle"></i> How to Use Bulk Import</h3>
+            <div class="instruction-grid">
+                <div class="instruction-item">
+                    <h4><i class="fas fa-download"></i> Step 1: Download Template</h4>
+                    <p>Download our CSV template with the correct format and sample data.</p>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="downloadTemplate()" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Download Template
+                        </button>
+                        <!--<button onclick="downloadManualTemplate()" class="btn btn-outline" style="font-size: 0.875rem;">
+                            <i class="fas fa-copy"></i> Copy Template
+                        </button>-->
+                    </div>
+                </div>
+                <div class="instruction-item">
+                    <h4><i class="fas fa-edit"></i> Step 2: Fill Your Data</h4>
+                    <p>Replace sample data with your member information following the template format.</p>
+                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                        <strong>Required columns:</strong>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                            <li>first_name</li>
+                            <li>last_name</li>
+                            <li>email</li>
+                            <li>phone</li>
+                            <li>monthly_commitment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Upload CSV File
+            </h2>
+            
+            <!-- File Upload Area -->
+            <div id="fileDropArea" class="file-drop-area">
+                <div id="dropContent">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem; color: #475569;">Drop your CSV file here or click to browse</h3>
+                    <p style="color: #64748b; margin-bottom: 1.5rem;">Supported format: .csv files only</p>
+                    <input type="file" id="csvFile" accept=".csv" class="hidden">
+                    <button onclick="document.getElementById('csvFile').click()" class="btn btn-primary">
+                        <i class="fas fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+                
+                <!-- File Info (hidden initially) -->
+                <div id="fileInfo" class="hidden">
+                    <div class="file-info">
+                        <i class="fas fa-file-csv" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                        <h3 id="fileName">filename.csv</h3>
+                        <p id="fileSize">0 KB</p>
+                        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+                            <button onclick="window.uploadFile()" class="btn btn-success">
+                                <i class="fas fa-upload"></i> Import Members
+                            </button>
+                            <button onclick="window.clearFile()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section (hidden initially) -->
+        <div id="progressSection" class="content-section hidden">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i>
+                Import Progress
+            </h2>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: #64748b;">
+                <span>Processing...</span>
+                <span id="progressText">0%</span>
+            </div>
+            <p id="progressMessage" style="color: #64748b;">Preparing to import...</p>
+        </div>
+
+        <!-- Results Section (hidden initially) -->
+        <div id="resultsSection" class="hidden">
+            <!-- Summary Cards -->
+            <div class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Import Summary
+                </h2>
+                <div class="results-summary">
+                    <div class="summary-card total">
+                        <div id="totalProcessed" class="summary-number" style="color: #667eea;">0</div>
+                        <div class="summary-label">Total Processed</div>
+                    </div>
+                    <div class="summary-card success">
+                        <div id="successCount" class="summary-number" style="color: #48bb78;">0</div>
+                        <div class="summary-label">Successful</div>
+                    </div>
+                    <div class="summary-card error">
+                        <div id="errorCount" class="summary-number" style="color: #f56565;">0</div>
+                        <div class="summary-label">Errors</div>
+                    </div>
+                    <div class="summary-card rate">
+                        <div id="successRate" class="summary-number" style="color: #ed8936;">0%</div>
+                        <div class="summary-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Successful Imports -->
+            <div id="successSection" class="content-section hidden">
+                <h2 class="section-title" style="color: #48bb78;">
+                    <i class="fas fa-check-circle"></i>
+                    Successfully Imported Members
+                </h2>
+                <div class="data-table">
+                    <div class="table-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Row</th>
+                                    <th>Account Number</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                </tr>
+                            </thead>
+                            <tbody id="successTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Details -->
+            <div id="errorSection" class="content-section hidden">
+                <h2 class="section-title" style="color: #f56565;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Import Errors
+                </h2>
+                <div class="data-table">
+                    <div class="table-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Row</th>
+                                    <th>Field</th>
+                                    <th>Error</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="errorTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="btn-group">
+                <button onclick="resetImport()" class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Import Another File
+                </button>
+                <a href="admin-members.html" class="btn btn-success">
+                    <i class="fas fa-users"></i> View All Members
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if API_BASE already exists, if not declare it
+        if (typeof API_BASE === 'undefined') {
+            var API_BASE = '/api';
+        }
+        
+        // Check if authToken already exists, if not get it from localStorage
+        if (typeof authToken === 'undefined') {
+            var authToken = localStorage.getItem('authToken');
+        }
+
+        // Check authentication
+        if (!authToken) {
+            window.location.href = 'login.html';
+        }
+
+        // Simple download functions - directly attached to window
+        window.downloadTemplate = function() {
+            console.log('Download Template clicked!');
+            try {
+                const csvText = `first_name,last_name,email,phone,monthly_commitment
+John,Doe,john.doe@example.com,+250788123456,10000
+Jane,Smith,jane.smith@example.com,+250788654321,15000
+Robert,Johnson,robert.johnson@example.com,+250788111222,12000`;
+                
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'bulk_members_template.csv';
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                console.log('Template download completed successfully');
+                // Show success message
+                const successMsg = document.getElementById('successMsg');
+                if (successMsg) {
+                    successMsg.textContent = 'Template downloaded successfully!';
+                    successMsg.classList.remove('hidden');
+                    setTimeout(() => successMsg.classList.add('hidden'), 3000);
+                }
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Download failed: ' + error.message);
+            }
+        };
+
+        window.downloadManualTemplate = function() {
+            console.log('Download Manual Template clicked!');
+            try {
+                const csvText = `first_name,last_name,email,phone,monthly_commitment
+John,Doe,john.doe@example.com,+250788123456,10000
+Jane,Smith,jane.smith@example.com,+250788654321,15000
+Robert,Johnson,robert.johnson@example.com,+250788111222,12000
+Alice,Brown,alice.brown@example.com,+250788333444,8000
+Michael,Wilson,michael.wilson@example.com,+250788555666,20000`;
+                
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'bulk_members_template_extended.csv';
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                console.log('Manual template download completed successfully');
+                // Show success message
+                const successMsg = document.getElementById('successMsg');
+                if (successMsg) {
+                    successMsg.textContent = 'Extended template downloaded successfully!';
+                    successMsg.classList.remove('hidden');
+                    setTimeout(() => successMsg.classList.add('hidden'), 3000);
+                }
+                
+            } catch (error) {
+                console.error('Manual download error:', error);
+                alert('Download failed: ' + error.message);
+            }
+        };
+
+        // Other utility functions
+        window.logout = function() {
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html';
+        };
+
+        window.showError = function(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            if (errorMsg) {
+                errorMsg.textContent = message;
+                errorMsg.classList.remove('hidden');
+                setTimeout(() => errorMsg.classList.add('hidden'), 5000);
+            } else {
+                alert('Error: ' + message);
+            }
+        };
+
+        window.showSuccess = function(message) {
+            const successMsg = document.getElementById('successMsg');
+            if (successMsg) {
+                successMsg.textContent = message;
+                successMsg.classList.remove('hidden');
+                setTimeout(() => successMsg.classList.add('hidden'), 3000);
+            } else {
+                alert('Success: ' + message);
+            }
+        };
+
+        window.clearFile = function() {
+            console.log('Clearing file...');
+            
+            const csvFileInput = document.getElementById('csvFile');
+            const dropContent = document.getElementById('dropContent');
+            const fileInfo = document.getElementById('fileInfo');
+            
+            if (csvFileInput) csvFileInput.value = '';
+            if (dropContent) dropContent.classList.remove('hidden');
+            if (fileInfo) fileInfo.classList.add('hidden');
+            
+            // Clear the global file variable
+            selectedFile = null;
+            console.log('File cleared from memory');
+        };
+
+        // Store the selected file globally so we can access it from upload
+        let selectedFile = null;
+
+        window.uploadFile = function() {
+            console.log('Upload File button clicked!');
+            
+            const csvFileInput = document.getElementById('csvFile');
+            // Try to get file from input first, then from global variable
+            const file = (csvFileInput && csvFileInput.files[0]) || selectedFile;
+            
+            console.log('File input found:', !!csvFileInput);
+            console.log('File from input:', !!(csvFileInput && csvFileInput.files[0]));
+            console.log('File from drag/drop:', !!selectedFile);
+            console.log('File selected:', !!file);
+            
+            if (!file) {
+                window.showError('Please select a file first.');
+                return;
+            }
+
+            console.log('File details:', {
+                name: file.name,
+                size: file.size,
+                type: file.type
+            });
+
+            // Check if it's a CSV file
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                window.showError('Please select a CSV file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            console.log('Starting upload to:', API_BASE + '/admin/members/bulk-import');
+            console.log('Auth token available:', !!authToken);
+
+            // Show upload progress message
+            window.showSuccess('Uploading file... Please wait.');
+
+            fetch(API_BASE + '/admin/members/bulk-import', {
+                method: 'POST',
+                headers: { 
+                    'Authorization': authToken 
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('Upload response status:', response.status);
+                console.log('Upload response ok:', response.ok);
+                
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Upload failed: ${response.status} - ${text}`);
+                    });
+                }
+                
+                return response.json();
+            })
+            .then(result => {
+                console.log('Upload result:', result);
+                window.showResults(result);
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                window.showError('Upload failed: ' + error.message);
+            });
+        };
+
+        window.showResults = function(result) {
+            console.log('Showing results:', result);
+            
+            // Show summary message first
+            const message = `Import completed: ${result.success_count} successful, ${result.error_count} errors out of ${result.total_processed} total`;
+            
+            if (result.error_count > 0) {
+                window.showError(message);
+            } else {
+                window.showSuccess(message);
+            }
+            
+            // Show detailed results section
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) {
+                resultsSection.classList.remove('hidden');
+                
+                // Update summary cards
+                const totalProcessed = document.getElementById('totalProcessed');
+                const successCount = document.getElementById('successCount');
+                const errorCount = document.getElementById('errorCount');
+                const successRate = document.getElementById('successRate');
+                
+                if (totalProcessed) totalProcessed.textContent = result.total_processed || 0;
+                if (successCount) successCount.textContent = result.success_count || 0;
+                if (errorCount) errorCount.textContent = result.error_count || 0;
+                
+                const rate = result.total_processed > 0 ? 
+                    Math.round((result.success_count / result.total_processed) * 100) : 0;
+                if (successRate) successRate.textContent = rate + '%';
+
+                // Show successful imports table
+                if (result.success_count > 0 && result.success_members) {
+                    const successSection = document.getElementById('successSection');
+                    const successTable = document.getElementById('successTable');
+                    
+                    if (successSection) successSection.classList.remove('hidden');
+                    if (successTable) {
+                        successTable.innerHTML = '';
+                        
+                        result.success_members.forEach(member => {
+                            const row = document.createElement('tr');
+                            row.className = 'success-row';
+                            row.innerHTML = `
+                                <td>${member.row}</td>
+                                <td><strong>${member.account_number}</strong></td>
+                                <td>${member.name}</td>
+                                <td>${member.email}</td>
+                                <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${member.password}</code></td>
+                            `;
+                            successTable.appendChild(row);
+                        });
+                    }
+                }
+
+                // Show error details table
+                if (result.error_count > 0 && result.errors) {
+                    const errorSection = document.getElementById('errorSection');
+                    const errorTable = document.getElementById('errorTable');
+                    
+                    if (errorSection) errorSection.classList.remove('hidden');
+                    if (errorTable) {
+                        errorTable.innerHTML = '';
+                        
+                        result.errors.forEach(error => {
+                            const row = document.createElement('tr');
+                            row.className = 'error-row';
+                            row.innerHTML = `
+                                <td>${error.row}</td>
+                                <td><strong>${error.field}</strong></td>
+                                <td style="color: #dc2626;">${error.message}</td>
+                                <td style="color: #64748b; font-family: monospace; max-width: 200px; word-break: break-all;">${error.data || ''}</td>
+                            `;
+                            errorTable.appendChild(row);
+                        });
+                    }
+                }
+
+                // Scroll to results
+                setTimeout(() => {
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        };
+
+        window.resetImport = function() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) resultsSection.classList.add('hidden');
+            window.clearFile();
+        };
+
+        // Load user info
+        function loadUserInfo() {
+            fetch(API_BASE + '/profile', {
+                headers: { 'Authorization': authToken }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load user info');
+                return response.json();
+            })
+            .then(user => {
+                const userName = document.getElementById('userName');
+                const userAvatar = document.getElementById('userAvatar');
+                
+                if (userName) userName.textContent = user.first_name + ' ' + user.last_name;
+                if (userAvatar) userAvatar.textContent = user.first_name.charAt(0).toUpperCase();
+                
+                if (user.role !== 'admin' && user.role !== 'superadmin') {
+                    window.showError('Access denied. Admin privileges required.');
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.logout();
+            });
+        }
+
+        function handleFileSelect(file) {
+            console.log('handleFileSelect called with file:', file.name);
+            
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                window.showError('Please select a CSV file.');
+                return;
+            }
+
+            // Store the file globally so uploadFile can access it
+            selectedFile = file;
+            console.log('File stored globally:', !!selectedFile);
+
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const dropContent = document.getElementById('dropContent');
+            const fileInfo = document.getElementById('fileInfo');
+
+            if (fileName) fileName.textContent = file.name;
+            if (fileSize) fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+            if (dropContent) dropContent.classList.add('hidden');
+            if (fileInfo) fileInfo.classList.remove('hidden');
+            
+            console.log('UI updated for file:', file.name);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            console.log('API_BASE:', API_BASE);
+            console.log('Auth token:', authToken ? 'Present' : 'Missing');
+            
+            loadUserInfo();
+            
+            // File handling setup
+            const fileDropArea = document.getElementById('fileDropArea');
+            const csvFileInput = document.getElementById('csvFile');
+
+            console.log('File elements found:', {
+                fileDropArea: !!fileDropArea,
+                csvFileInput: !!csvFileInput
+            });
+
+            // Drag and drop handlers
+            if (fileDropArea) {
+                fileDropArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    fileDropArea.classList.add('dragover');
+                });
+
+                fileDropArea.addEventListener('dragleave', function() {
+                    fileDropArea.classList.remove('dragover');
+                });
+
+                fileDropArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    fileDropArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    console.log('Files dropped:', files.length);
+                    if (files.length > 0) {
+                        handleFileSelect(files[0]);
+                    }
+                });
+            }
+
+            if (csvFileInput) {
+                csvFileInput.addEventListener('change', function(e) {
+                    console.log('File input changed, files:', e.target.files.length);
+                    if (e.target.files.length > 0) {
+                        handleFileSelect(e.target.files[0]);
+                    }
+                });
+            }
+
+            // Test functions are available
+            console.log('Functions available:', {
+                downloadTemplate: typeof window.downloadTemplate,
+                downloadManualTemplate: typeof window.downloadManualTemplate,
+                uploadFile: typeof window.uploadFile,
+                clearFile: typeof window.clearFile
+            });
+        });
+    </script>
+</body>
+</html>

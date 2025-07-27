@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasurer Dashboard - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* Updated to 5 columns for loan card */
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid;
+            cursor: pointer; /* Added for clickable cards */
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary { border-left-color: #667eea; }
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.warning { border-left-color: #ffc107; }
+        .stat-card.danger { border-left-color: #dc3545; }
+        .stat-card.info { border-left-color: #17a2b8; }
+        .stat-card.loans { border-left-color: #fd7e14; } /* New loan card color */
+
+        .stat-card .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); }
+        .stat-card.info .stat-icon { background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); }
+        .stat-card.loans .stat-icon { background: linear-gradient(135deg, #fd7e14 0%, #ff6b6b 100%); } /* New loan icon gradient */
+
+        .stat-card .stat-content {
+            flex: 1;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Notification badge for loan card */
+        .notification-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Other styles remain the same */
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .action-card .action-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .action-card p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* Status Cards */
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .status-card .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .status-badge.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        /* Overview Cards */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .overview-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .overview-card.members { border-left-color: #667eea; }
+        .overview-card.collections { border-left-color: #28a745; }
+        .overview-card.repayments { border-left-color: #dc3545; }
+
+        .overview-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .overview-card .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .overview-card.members .card-icon { background: #667eea; }
+        .overview-card.collections .card-icon { background: #28a745; }
+        .overview-card.repayments .card-icon { background: #dc3545; }
+
+        .overview-card h4 {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .overview-card .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Form Improvements */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        /* Button Improvements */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #ff6b6b 100%);
+            color: white;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .action-card,
+            .status-card {
+                min-height: 250px;
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card .stat-value {
+                font-size: 24px;
+            }
+
+            .action-card .action-icon,
+            .status-card .status-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-coins"></i>
+            <h2>Treasurer Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="treasurer-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="treasurer-loans.html"><i class="fas fa-hand-holding-usd"></i>Loan Approvals</a></li>
+            <li><a href="treasurer-salary-deductions.html"><i class="fas fa-money-bill-wave"></i>Salary Deductions</a></li>
+            <li><a href="treasurer-members.html"><i class="fas fa-users"></i>Members Summary</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i>Treasurer Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">T</div>
+                <span class="user-name" id="userName">Treasurer Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Action and Status Cards -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3>Generate Monthly List</h3>
+                <p>Create salary deduction lists for payroll processing</p>
+                <div style="width: 100%; max-width: 300px; margin-bottom: 20px;">
+                    <label class="form-label" for="monthInput">Select Month:</label>
+                    <input type="month" id="monthInput" class="form-input" required>
+                </div>
+                <button class="btn btn-primary" onclick="generateMonthlyList()">
+                    <i class="fas fa-plus"></i>
+                    Generate List
+                </button>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3>Current Month Status</h3>
+                <p id="currentMonthStatus">Checking status...</p>
+                <div id="statusBadge"></div>
+                <button class="btn btn-success" onclick="location.href='treasurer-salary-deductions.html'">
+                    <i class="fas fa-list"></i>
+                    View All Lists
+                </button>
+            </div>
+        </div>
+        
+        <!-- Members Overview -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i>
+                Members Overview
+            </h2>
+            <div class="overview-grid">
+                <div class="overview-card members">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Total Active Members</h4>
+                    </div>
+                    <div class="card-value" id="overviewMembers">Loading...</div>
+                </div>
+                <div class="overview-card collections">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <h4>Monthly Collections</h4>
+                    </div>
+                    <div class="card-value" id="overviewCollections">Loading...</div>
+                </div>
+                <div class="overview-card repayments">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h4>Pending Repayments</h4>
+                    </div>
+                    <div class="card-value" id="overviewRepayments">Loading...</div>
+                </div>
+            </div>
+            <button class="btn btn-info" onclick="location.href='treasurer-members.html'">
+                <i class="fas fa-eye"></i>
+                View Detailed Summary
+            </button>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        
+        if (!token || user.role !== 'treasurer') {
+            window.location.href = '/';
+        }
+        
+        // Set current month as default
+        const now = new Date();
+        const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            document.getElementById('monthInput').value = currentMonth;
+            loadDashboard();
+            loadTreasurerLoanStats(); // Load loan stats
+        });
+        
+        // Update user info in header
+        function updateUserInfo() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user.first_name && user.last_name) {
+                userName.textContent = `${user.first_name} ${user.last_name}`;
+                userAvatar.textContent = user.first_name.charAt(0).toUpperCase();
+            }
+        }
+        
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await apiCall('/treasurer/dashboard');
+                
+                // Create stats cards
+                await createStatsCards(response);
+                
+                // Update current month status
+                updateMonthStatus(response);
+                
+                // Update overview info
+                updateOverviewInfo(response);
+                
+            } catch (error) {
+                showError('Error loading dashboard: ' + error.message);
+            }
+        }
+        
+        // FIXED: Load treasurer loan statistics using the correct endpoint
+        async function loadTreasurerLoanStats() {
+            try {
+                console.log('=== DEBUGGING TREASURER LOAN STATS ===');
+                console.log('User object:', user);
+                console.log('User role:', user.role);
+                console.log('Auth token:', token ? 'Present' : 'Missing');
+                
+                // FIXED: Use treasurer-specific endpoint first
+                console.log('Making API call to: /treasurer/loans/pending');
+                
+                try {
+                    const response = await apiCall('/treasurer/loans/pending');
+                    const loans = response && Array.isArray(response) ? response : [];
+                    console.log('Treasurer-specific API Response received:', response);
+                    console.log('Processed loans:', loans);
+                    return loans.length;
+                } catch (treasurerError) {
+                    console.log('Treasurer endpoint failed, trying admin endpoint with treasurer access...');
+                    
+                    // Fallback: Try the admin endpoint (should work due to role permissions)
+                    const adminResponse = await apiCall('/admin/loans/pending');
+                    const adminLoans = adminResponse && Array.isArray(adminResponse) ? adminResponse : [];
+                    console.log('Admin API Response received:', adminResponse);
+                    
+                    // Filter for loans that treasurer can approve (status = 'pending')
+                    const treasurerLoans = adminLoans.filter(loan => loan.status === 'pending');
+                    console.log('Filtered treasurer loans:', treasurerLoans);
+                    return treasurerLoans.length;
+                }
+                
+            } catch (error) {
+                console.error('=== LOAN STATS ERROR ===');
+                console.error('Error type:', error.constructor.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+                
+                // Final fallback: Try to get count from dashboard data
+                try {
+                    console.log('Trying final fallback - getting count from dashboard...');
+                    const dashboardResponse = await apiCall('/treasurer/dashboard');
+                    if (dashboardResponse && dashboardResponse.pending_loans !== undefined) {
+                        console.log('Got loan count from dashboard:', dashboardResponse.pending_loans);
+                        return dashboardResponse.pending_loans;
+                    }
+                } catch (fallbackError) {
+                    console.error('Final fallback also failed:', fallbackError);
+                }
+                
+                return 0;
+            }
+        }
+        
+        // Create stats cards with loan approval card
+        async function createStatsCards(data) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            // Load loan stats
+            const pendingLoanCount = await loadTreasurerLoanStats();
+            
+            const statsCards = [
+                {
+                    title: 'Active Members',
+                    value: data.total_active_members,
+                    icon: 'fas fa-users',
+                    color: 'primary',
+                    clickable: false
+                },
+                {
+                    title: 'Monthly Savings',
+                    value: 'RWF ' + formatNumber(data.total_monthly_savings),
+                    icon: 'fas fa-piggy-bank',
+                    color: 'success',
+                    clickable: false
+                },
+                {
+                    title: 'Social Funds',
+                    value: 'RWF ' + formatNumber(data.total_social_funds),
+                    icon: 'fas fa-hand-holding-heart',
+                    color: 'warning',
+                    clickable: false
+                },
+                {
+                    title: 'Pending Repayments',
+                    value: 'RWF ' + formatNumber(data.pending_loan_repayments),
+                    icon: 'fas fa-credit-card',
+                    color: 'danger',
+                    clickable: false
+                },
+                {
+                    title: 'Loan Approvals',
+                    value: pendingLoanCount,
+                    icon: 'fas fa-hand-holding-usd',
+                    color: 'loans',
+                    clickable: true,
+                    onclick: 'navigateToLoans()',
+                    badge: pendingLoanCount > 0 ? pendingLoanCount : null
+                }
+            ];
+            
+            statsGrid.innerHTML = statsCards.map(card => `
+                <div class="stat-card ${card.color}" ${card.clickable ? `onclick="${card.onclick}"` : ''} ${card.clickable ? 'style="cursor: pointer;"' : ''}>
+                    ${card.badge ? `<div class="notification-badge">${card.badge}</div>` : ''}
+                    <div class="stat-icon">
+                        <i class="${card.icon}"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">${card.value}</div>
+                        <div class="stat-label">${card.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Navigate to loan approvals page
+        function navigateToLoans() {
+            window.location.href = 'treasurer-loans.html';
+        }
+        
+        // Update current month status
+        function updateMonthStatus(data) {
+            const statusDiv = document.getElementById('statusBadge');
+            const statusText = document.getElementById('currentMonthStatus');
+            
+            if (data.current_month_processed) {
+                statusText.textContent = `${currentMonth} has been processed`;
+                statusDiv.innerHTML = '<span class="status-badge success">Processed</span>';
+            } else {
+                statusText.textContent = `${currentMonth} is pending processing`;
+                statusDiv.innerHTML = '<span class="status-badge warning">Pending</span>';
+            }
+            
+            if (data.last_processed_month !== 'None') {
+                statusText.textContent += `. Last processed: ${data.last_processed_month}`;
+            }
+        }
+        
+        // Update overview info
+        function updateOverviewInfo(data) {
+            document.getElementById('overviewMembers').textContent = data.total_active_members;
+            document.getElementById('overviewCollections').textContent = 'RWF ' + formatNumber(data.total_monthly_savings + data.total_social_funds);
+            document.getElementById('overviewRepayments').textContent = 'RWF ' + formatNumber(data.pending_loan_repayments);
+        }
+        
+        // Generate monthly list
+        async function generateMonthlyList() {
+            const monthYear = document.getElementById('monthInput').value;
+            if (!monthYear) {
+                showError('Please select a month');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/treasurer/salary-deductions/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({ month_year: monthYear })
+                });
+                
+                showSuccess(`Successfully generated list for ${monthYear}\nTotal Members: ${response.total_members}\nTotal Amount: RWF ${formatNumber(response.total_amount)}`);
+                loadDashboard(); // Reload dashboard
+            } catch (error) {
+                showError('Error generating list: ' + error.message);
+            }
+        }
+        
+        // Format numbers with commas
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+        
+        // Auto-refresh loan stats every 30 seconds
+        setInterval(async function() {
+            const pendingCount = await loadTreasurerLoanStats();
+            const loanCard = document.querySelector('.stat-card.loans');
+            if (loanCard) {
+                const valueElement = loanCard.querySelector('.stat-value');
+                const badgeElement = loanCard.querySelector('.notification-badge');
+                
+                if (valueElement) {
+                    valueElement.textContent = pendingCount;
+                }
+                
+                if (pendingCount > 0) {
+                    if (!badgeElement) {
+                        loanCard.insertAdjacentHTML('afterbegin', `<div class="notification-badge">${pendingCount}</div>`);
+                    } else {
+                        badgeElement.textContent = pendingCount;
+                    }
+                } else if (badgeElement) {
+                    badgeElement.remove();
+                }
+            }
+        }, 30000); // 30 seconds
+    </script>
+</body>
+</html>

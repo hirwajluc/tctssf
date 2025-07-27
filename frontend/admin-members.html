@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Management - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Admin Portal</h2>
+            <p class="subtitle">System Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="admin-create-member.html"><i class="fas fa-user-plus"></i>Create Member</a></li>
+            <li><a href="admin-members.html" class="active"><i class="fas fa-users"></i>Member List</a></li>
+            <li><a href="admin-loans.html"><i class="fas fa-clock"></i>Pending Loans</a></li>
+            <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i>Reports</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-users"></i>Member Management</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span class="user-name" id="userName">Admin Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Search and Filter -->
+        <!-- Replace the existing Search and Filter section with this -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-search"></i>
+                Search Members
+            </h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="searchInput">Search by Name, Email, or Account Number</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Enter search term..." onkeyup="filterMembers()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="roleFilter">Filter by Role</label>
+                    <div class="input-wrapper select-wrapper">
+                        <i class="fas fa-filter"></i>
+                        <select id="roleFilter" onchange="filterMembers()">
+                            <option value="">All Roles</option>
+                            <option value="member">Members</option>
+                            <option value="admin">Admins</option>
+                            <option value="superadmin">Super Admins</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="statusFilter">Filter by Status</label>
+                    <div class="input-wrapper select-wrapper">
+                        <i class="fas fa-toggle-on"></i>
+                        <select id="statusFilter" onchange="filterMembers()">
+                            <option value="">All Status</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="filters-actions">
+                <button onclick="clearFilters()" class="btn" style="background: #e2e8f0; color: #4a5568;">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+                <a href="admin-create-member.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Member
+                </a>
+                <a href="admin-add-bulk-members.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Bulk Add New Members
+                </a>
+            </div>
+        </div>
+        
+        <!-- Members Table -->
+        <div class="content-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin-bottom: 0;">
+                    <i class="fas fa-list"></i>
+                    All Users (<span id="memberCount">0</span>)
+                </h2>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="refreshMembers()" class="btn" style="background: #f7fafc; color: #4a5568; border: 1px solid #e2e8f0;">
+                        <i class="fas fa-refresh"></i> Refresh
+                    </button>
+                    <button onclick="exportMembers()" class="btn" style="background: #48bb78; color: white;">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="table" id="membersTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Account</th>
+                            <th><i class="fas fa-user" style="margin-right: 8px;"></i>Name</th>
+                            <th><i class="fas fa-envelope" style="margin-right: 8px;"></i>Email</th>
+                            <th><i class="fas fa-phone" style="margin-right: 8px;"></i>Phone</th>
+                            <th><i class="fas fa-shield-alt" style="margin-right: 8px;"></i>Role</th>
+                            <th><i class="fas fa-toggle-on" style="margin-right: 8px;"></i>Status</th>
+                            <th><i class="fas fa-calendar" style="margin-right: 8px;"></i>Joined</th>
+                            <th><i class="fas fa-cogs" style="margin-right: 8px;"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #667eea;"></i>
+                                <p style="margin-top: 8px; color: #718096;">Loading members...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="editModal" class="edit-modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit User</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editUserForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="editFirstName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="editLastName" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="editEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="editPhone">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i class="fas fa-toggle-on"></i>
+                            <select id="editStatus" required>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i class="fas fa-shield-alt"></i>
+                            <select id="editRole" required>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>
+                        Update User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let allMembers = [];
+        let currentEditUserId = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication and role
+            if (!requireAuth() || !requireRole(['admin', 'superadmin'])) return;
+            
+            // Initialize page
+            initializePage();
+            
+            // Load members
+            loadAllMembers();
+            
+            // Setup edit form handler
+            setupEditForm();
+        });
+        
+        async function loadAllMembers() {
+            try {
+                const members = await apiCall('/admin/users');
+                allMembers = members;
+                displayMembers(members);
+                updateMemberCount(members.length);
+            } catch (error) {
+                showError('Failed to load members: ' + error.message);
+                document.getElementById('membersTableBody').innerHTML = createEmptyTableRow(8, 'Failed to load members');
+            }
+        }
+        
+        function displayMembers(members) {
+            const tbody = document.getElementById('membersTableBody');
+            
+            if (members.length === 0) {
+                tbody.innerHTML = createEmptyTableRow(8, 'No members found', 'fas fa-users');
+                return;
+            }
+            
+            tbody.innerHTML = members.map(member => `
+                <tr data-user-id="${member.id}">
+                    <td><strong>${member.account_number}</strong></td>
+                    <td>
+                        <span style="display: flex; align-items: center;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; margin-right: 12px;">
+                                ${getUserInitials(member.first_name, member.last_name)}
+                            </div>
+                            ${member.first_name} ${member.last_name}
+                        </span>
+                    </td>
+                    <td>${member.email}</td>
+                    <td>${member.phone || '-'}</td>
+                    <td>
+                        <span class="status ${getRoleStatusClass(member.role)}" style="text-transform: capitalize;">
+                            ${formatRole(member.role)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status ${member.is_active ? 'approved' : 'rejected'}">
+                            ${member.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>${formatDate(member.created_at)}</td>
+                    <td>
+                        <button class="btn-small btn-approve" onclick="editUser(${member.id})" title="Edit User">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${member.role !== 'superadmin' ? `
+                            <button class="btn-small btn-reject" onclick="deleteUser(${member.id})" title="Delete User">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function getRoleStatusClass(role) {
+            switch(role) {
+                case 'superadmin': return 'pending';
+                case 'admin': return 'approved';
+                case 'member': return 'rejected';
+                default: return 'pending';
+            }
+        }
+        
+        function formatRole(role) {
+            if (role === 'superadmin') return 'Super Admin';
+            return role.charAt(0).toUpperCase() + role.slice(1);
+        }
+        
+        function updateMemberCount(count) {
+            document.getElementById('memberCount').textContent = count;
+        }
+        
+        function filterMembers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const filteredMembers = allMembers.filter(member => {
+                const matchesSearch = !searchTerm || 
+                    member.first_name.toLowerCase().includes(searchTerm) ||
+                    member.last_name.toLowerCase().includes(searchTerm) ||
+                    member.email.toLowerCase().includes(searchTerm) ||
+                    member.account_number.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || member.role === roleFilter;
+                const matchesStatus = !statusFilter || member.is_active.toString() === statusFilter;
+                
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+            
+            displayMembers(filteredMembers);
+            updateMemberCount(filteredMembers.length);
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            displayMembers(allMembers);
+            updateMemberCount(allMembers.length);
+        }
+        
+        function refreshMembers() {
+            loadAllMembers();
+        }
+        
+        function exportMembers() {
+            // Create CSV content
+            const headers = ['Account Number', 'First Name', 'Last Name', 'Email', 'Phone', 'Role', 'Status', 'Created Date'];
+            const csvContent = [
+                headers.join(','),
+                ...allMembers.map(member => [
+                    member.account_number,
+                    member.first_name,
+                    member.last_name,
+                    member.email,
+                    member.phone || '',
+                    member.role,
+                    member.is_active ? 'Active' : 'Inactive',
+                    formatDate(member.created_at)
+                ].join(','))
+            ].join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `members_export_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showSuccess('Members list exported successfully!');
+        }
+        
+        async function editUser(userId) {
+            try {
+                const userData = await apiCall(`/admin/users/${userId}`);
+                const currentUser = getCurrentUser();
+                
+                // Check if current user can edit this user's role
+                const canEditRole = (currentUser.role === 'superadmin') || 
+                                   (currentUser.role === 'admin' && userData.role === 'member');
+                
+                if (!canEditRole && currentUser.role === 'admin' && userData.role !== 'member') {
+                    showError('You can only edit member accounts');
+                    return;
+                }
+                
+                currentEditUserId = userId;
+                
+                // Populate form
+                document.getElementById('editFirstName').value = userData.first_name;
+                document.getElementById('editLastName').value = userData.last_name;
+                document.getElementById('editEmail').value = userData.email;
+                document.getElementById('editPhone').value = userData.phone || '';
+                document.getElementById('editStatus').value = userData.is_active.toString();
+                
+                // Setup role options
+                const editRoleSelect = document.getElementById('editRole');
+                if (currentUser.role === 'superadmin') {
+                    editRoleSelect.innerHTML = `
+                        <option value="member" ${userData.role === 'member' ? 'selected' : ''}>Member</option>
+                        <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        <option value="superadmin" ${userData.role === 'superadmin' ? 'selected' : ''}>Super Admin</option>
+                    `;
+                } else {
+                    editRoleSelect.innerHTML = `
+                        <option value="member" ${userData.role === 'member' ? 'selected' : ''}>Member</option>
+                    `;
+                }
+                
+                if (currentUser.role === 'admin' && userData.role !== 'member') {
+                    editRoleSelect.disabled = true;
+                }
+                
+                // Show modal
+                document.getElementById('editModal').classList.remove('hidden');
+                
+            } catch (error) {
+                showError('Failed to load user details: ' + error.message);
+            }
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            currentEditUserId = null;
+            document.getElementById('editRole').disabled = false;
+        }
+        
+        function setupEditForm() {
+            document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!currentEditUserId) return;
+                
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                showLoading(submitBtn);
+                
+                const userData = {
+                    first_name: document.getElementById('editFirstName').value,
+                    last_name: document.getElementById('editLastName').value,
+                    email: document.getElementById('editEmail').value,
+                    phone: document.getElementById('editPhone').value,
+                    is_active: document.getElementById('editStatus').value === 'true',
+                    role: document.getElementById('editRole').value
+                };
+                
+                try {
+                    await apiCall(`/admin/users/${currentEditUserId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(userData)
+                    });
+                    
+                    showSuccess('User updated successfully!');
+                    closeEditModal();
+                    loadAllMembers();
+                    
+                } catch (error) {
+                    showError(error.message || 'Failed to update user');
+                } finally {
+                    hideLoading(submitBtn, originalText);
+                }
+            });
+        }
+        
+        async function deleteUser(userId) {
+            const member = allMembers.find(m => m.id === userId);
+            if (!member) return;
+            
+            const confirmMessage = `Are you sure you want to delete ${member.first_name} ${member.last_name}? This action cannot be undone.`;
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    await apiCall(`/admin/users/${userId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    showSuccess('User deleted successfully!');
+                    loadAllMembers();
+                    
+                } catch (error) {
+                    showError(error.message || 'Failed to delete user');
+                }
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !document.getElementById('editModal').classList.contains('hidden')) {
+                closeEditModal();
+            }
+        });
+    </script>
+</body>
+</html>

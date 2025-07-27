@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Commitment - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Member Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="member-commitment.html" class="active"><i class="fas fa-edit"></i>Update Commitment</a></li>
+            <li><a href="member-loans.html"><i class="fas fa-hand-holding-usd"></i>Apply for Loan</a></li>
+            <li><a href="member-my-loans.html"><i class="fas fa-credit-card"></i>My Loans</a></li>
+            <li><a href="member-transactions.html"><i class="fas fa-history"></i>Transaction History</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-edit"></i>Update Monthly Savings Commitment</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">M</div>
+                <span class="user-name" id="userName">Member Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Update Monthly Commitment -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-edit"></i>
+                Update Monthly Savings Commitment
+            </h2>
+            <div class="info-alert">
+                <div style="display: flex; align-items: center; color: #285e61;">
+                    <i class="fas fa-info-circle" style="margin-right: 12px; font-size: 18px;"></i>
+                    <div>
+                        <strong>Automatic Deductions:</strong>
+                        <p style="margin: 4px 0 0 0; font-size: 14px;">Your monthly commitment and social contribution are automatically deducted from your salary. Use this form to update your voluntary savings commitment amount.</p>
+                    </div>
+                </div>
+            </div>
+            <form id="commitmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentCommitment">Current Monthly Commitment (RWF)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" id="currentCommitment" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newCommitment">New Monthly Commitment (RWF)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-edit"></i>
+                            <input type="number" id="newCommitment" name="new_commitment" min="5000" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label for="effectiveDate">Effective From</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" id="effectiveDate" name="effective_date" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save" style="margin-right: 8px;"></i>
+                    Update Commitment
+                </button>
+            </form>
+        </div>
+        
+        <!-- Deduction Summary -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-receipt"></i>
+                Monthly Deduction Summary
+            </h2>
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Voluntary Savings</h3>
+                        <div class="stat-icon commitment">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="voluntaryAmount">RWF 0</div>
+                    <div class="stat-change">
+                        <i class="fas fa-calendar"></i>
+                        Monthly commitment
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Social Contribution</h3>
+                        <div class="stat-icon contribution">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">RWF 5,000</div>
+                    <div class="stat-change">
+                        <i class="fas fa-lock"></i>
+                        Fixed amount
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Total Deduction</h3>
+                        <div class="stat-icon balance">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalDeduction">RWF 0</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-down"></i>
+                        From salary
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/member-commitment.js"></script>
+</body>
+</html>

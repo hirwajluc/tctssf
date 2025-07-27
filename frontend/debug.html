@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - TCTSSF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .debug-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .token-display {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>TCTSSF API Debug Test</h1>
+        
+        <div id="tokenInfo" class="test-result info">
+            <strong>Token Status:</strong> <span id="tokenStatus">Checking...</span>
+        </div>
+        
+        <div class="token-display">
+            <strong>Token Value:</strong> <span id="tokenValue">Checking...</span>
+        </div>
+        
+        <br>
+        
+        <button onclick="testProfile()">Test Profile API</button>
+        <button onclick="testLoans()">Test Loans API</button>
+        <button onclick="testDashboard()">Test Dashboard API</button>
+        <button onclick="clearLog()">Clear Log</button>
+        <button onclick="logout()">Logout & Go to Login</button>
+        
+        <div id="results"></div>
+        
+        <h3>Debug Log:</h3>
+        <div id="debugLog" class="debug-log"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let debugLog = '';
+        
+        // Get tokens from localStorage
+        const authToken = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
+        
+        function log(message) {
+            console.log(message);
+            debugLog += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            document.getElementById('debugLog').textContent = debugLog;
+        }
+        
+        function showResult(id, message, type) {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>${id}:</strong> ${message}`;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function clearLog() {
+            debugLog = '';
+            document.getElementById('debugLog').textContent = '';
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Check token status on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded, checking tokens...');
+            log('authToken: ' + (authToken ? 'present (' + authToken.length + ' chars)' : 'missing'));
+            log('token: ' + (token ? 'present (' + token.length + ' chars)' : 'missing'));
+            
+            const activeToken = authToken || token;
+            
+            if (activeToken) {
+                document.getElementById('tokenStatus').textContent = 'Found';
+                document.getElementById('tokenStatus').parentElement.className = 'test-result success';
+                document.getElementById('tokenValue').textContent = activeToken.substring(0, 20) + '...(truncated)';
+                log('Using token: ' + activeToken.substring(0, 20) + '...');
+            } else {
+                document.getElementById('tokenStatus').textContent = 'Missing';
+                document.getElementById('tokenStatus').parentElement.className = 'test-result error';
+                document.getElementById('tokenValue').textContent = 'No token found';
+                log('No authentication token found!');
+            }
+        });
+        
+        async function testProfile() {
+            const activeToken = authToken || token;
+            if (!activeToken) {
+                showResult('Profile Test', 'No token available', 'error');
+                return;
+            }
+            
+            log('Testing profile API...');
+            
+            try {
+                const response = await fetch(API_BASE + '/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': activeToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log('Profile response status: ' + response.status);
+                log('Profile response headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())));
+                
+                const responseText = await response.text();
+                log('Profile raw response: ' + responseText);
+                
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    showResult('Profile Test', `Success! User: ${data.first_name} ${data.last_name}`, 'success');
+                } else {
+                    showResult('Profile Test', `Failed: ${response.status} - ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log('Profile test error: ' + error.message);
+                showResult('Profile Test', `Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLoans() {
+            const activeToken = authToken || token;
+            if (!activeToken) {
+                showResult('Loans Test', 'No token available', 'error');
+                return;
+            }
+            
+            log('Testing loans API...');
+            
+            try {
+                const response = await fetch(API_BASE + '/loans', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': activeToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log('Loans response status: ' + response.status);
+                log('Loans response headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())));
+                
+                const responseText = await response.text();
+                log('Loans raw response: ' + responseText);
+                
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    const loans = Array.isArray(data) ? data : [];
+                    showResult('Loans Test', `Success! Found ${loans.length} loans`, 'success');
+                    log('Loans data: ' + JSON.stringify(data, null, 2));
+                } else {
+                    showResult('Loans Test', `Failed: ${response.status} - ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log('Loans test error: ' + error.message);
+                showResult('Loans Test', `Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDashboard() {
+            const activeToken = authToken || token;
+            if (!activeToken) {
+                showResult('Dashboard Test', 'No token available', 'error');
+                return;
+            }
+            
+            log('Testing dashboard API...');
+            
+            try {
+                const response = await fetch(API_BASE + '/dashboard', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': activeToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log('Dashboard response status: ' + response.status);
+                log('Dashboard response headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())));
+                
+                const responseText = await response.text();
+                log('Dashboard raw response: ' + responseText);
+                
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    showResult('Dashboard Test', 'Success! Dashboard data loaded', 'success');
+                    log('Dashboard data: ' + JSON.stringify(data, null, 2));
+                } else {
+                    showResult('Dashboard Test', `Failed: ${response.status} - ${responseText}`, 'error');
+                }
+            } catch (error) {
+                log('Dashboard test error: ' + error.message);
+                showResult('Dashboard Test', `Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

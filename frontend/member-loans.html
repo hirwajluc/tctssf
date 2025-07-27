@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Loan - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .eligibility-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .eligibility-section h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eligibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .eligibility-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .eligibility-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+        }
+
+        .eligibility-value {
+            font-weight: 600;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .eligibility-note {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 3rem 0.75rem 0.75rem; /* Add right padding for icon */
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Input validation states */
+        .form-group input.valid {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .form-group input.invalid {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        /* Input icon container */
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .input-icon.valid {
+            color: #10b981;
+        }
+
+        .input-icon.invalid {
+            color: #ef4444;
+        }
+
+        /* Validation message */
+        .validation-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            min-height: 1.25rem;
+        }
+
+        .validation-message.valid {
+            color: #10b981;
+        }
+
+        .validation-message.invalid {
+            color: #ef4444;
+        }
+
+        .payment-preview {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .payment-preview.show {
+            display: block;
+        }
+
+        .payment-preview h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .payment-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payment-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .payment-value {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .payment-value.highlight {
+            color: #667eea;
+            font-size: 1.125rem;
+        }
+
+        .requirements {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .requirements h4 {
+            color: #92400e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .requirements ul {
+            color: #92400e;
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .requirements li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .ineligible-section {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .ineligible-section h3 {
+            color: #991b1b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .ineligible-section p {
+            color: #991b1b;
+            margin-bottom: 1rem;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .eligibility-grid,
+            .payment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Member Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="member-commitment.html"><i class="fas fa-edit"></i>Update Commitment</a></li>
+            <li><a href="member-loans.html" class="active"><i class="fas fa-hand-holding-usd"></i>Apply for Loan</a></li>
+            <li><a href="member-my-loans.html"><i class="fas fa-credit-card"></i>My Loans</a></li>
+            <li><a href="member-transactions.html"><i class="fas fa-history"></i>Transaction History</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-money-bill-wave"></i>Apply for Loan</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">M</div>
+                <span class="user-name" id="userName">Member Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        <div id="alertContainer"></div>
+
+        <!-- Check for active loans first -->
+        <div id="activeLoanWarning" class="alert alert-warning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            You already have an active loan. Please complete your current loan before applying for a new one.
+        </div>
+
+        <!-- Eligibility Information -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Loan Eligibility
+            </h2>
+            
+            <!-- Eligible Section -->
+            <div class="eligibility-section" id="eligibleSection">
+                <h3><i class="fas fa-calculator"></i> Your Current Eligibility</h3>
+                <div class="eligibility-grid">
+                    <div class="eligibility-item">
+                        <span class="eligibility-label">Current Savings Balance:</span>
+                        <span class="eligibility-value" id="currentBalance">Loading...</span>
+                    </div>
+                    <div class="eligibility-item">
+                        <span class="eligibility-label">Monthly Commitment:</span>
+                        <span class="eligibility-value" id="monthlyCommitment">Loading...</span>
+                    </div>
+                    <div class="eligibility-item">
+                        <span class="eligibility-label">Maximum Eligible Loan:</span>
+                        <span class="eligibility-value" id="maxEligible">Loading...</span>
+                    </div>
+                    <div class="eligibility-item">
+                        <span class="eligibility-label">Loan Status:</span>
+                        <span class="eligibility-value" id="loanStatus">Checking...</span>
+                    </div>
+                </div>
+                <div class="eligibility-note">
+                    <strong>New Loan Policy:</strong> You can borrow up to <strong>6 times your current savings balance</strong>. 
+                    Only one loan is allowed at a time - complete your current loan before applying for a new one.
+                </div>
+            </div>
+
+            <!-- Ineligible Section (Hidden by default) -->
+            <div class="ineligible-section" id="ineligibleSection" style="display: none;">
+                <h3><i class="fas fa-times-circle"></i> Not Eligible for Loan</h3>
+                <p id="ineligibilityReason">You are currently not eligible to apply for a loan.</p>
+                <div id="ineligibilityActions">
+                    <!-- Action buttons will be inserted here -->
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4><i class="fas fa-exclamation-triangle"></i> Loan Requirements</h4>
+                <ul>
+                    <li>Minimum loan amount: <strong>RWF 10,000</strong></li>
+                    <li>You must have a positive savings balance</li>
+                    <li>You must have an active monthly savings commitment</li>
+                    <li><strong>Only one loan at a time</strong> - complete current loan before applying for new one</li>
+                    <li>Maximum loan: <strong>6 times your current savings balance</strong></li>
+                    <li>Interest rate: <strong>5% per annum</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Loan Application Form -->
+        <div class="content-section" id="loanFormSection">
+            <h2 class="section-title">
+                <i class="fas fa-file-alt"></i>
+                Loan Application
+            </h2>
+            
+            <form id="loanApplicationForm">
+                <div class="form-group">
+                    <label for="amount">
+                        <i class="fas fa-money-bill"></i> Loan Amount (RWF)
+                    </label>
+                    <div class="input-container">
+                        <input type="number" id="amount" name="amount" min="10000" step="1000" 
+                               placeholder="Enter amount (minimum 10,000)" required>
+                        <div class="input-icon" id="amountIcon"></div>
+                    </div>
+                    <div class="validation-message" id="amountMessage"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="repaymentPeriod">
+                        <i class="fas fa-calendar-alt"></i> Repayment Period
+                    </label>
+                    <select id="repaymentPeriod" name="repaymentPeriod" required>
+                        <option value="">Select repayment period</option>
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12" selected>12 Months</option>
+                    </select>
+                </div>
+
+                <div class="payment-preview" id="paymentPreview">
+                    <h4><i class="fas fa-calculator"></i> Payment Breakdown</h4>
+                    <div class="payment-grid">
+                        <div class="payment-item">
+                            <span class="payment-label">Monthly Payment:</span>
+                            <span class="payment-value highlight" id="monthlyPayment">-</span>
+                        </div>
+                        <div class="payment-item">
+                            <span class="payment-label">Total Interest:</span>
+                            <span class="payment-value" id="totalInterest">-</span>
+                        </div>
+                        <div class="payment-item">
+                            <span class="payment-label">Total Amount:</span>
+                            <span class="payment-value" id="totalAmount">-</span>
+                        </div>
+                        <div class="payment-item">
+                            <span class="payment-label">Interest Rate:</span>
+                            <span class="payment-value">5.0% per annum</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Loan Application
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if API_BASE already exists, if not declare it
+        if (typeof API_BASE === 'undefined') {
+            var API_BASE = '/api';
+        }
+        
+        // Check if authToken already exists, if not get it from localStorage
+        if (typeof authToken === 'undefined') {
+            var authToken = localStorage.getItem('authToken') || localStorage.getItem('token');
+        }
+
+        console.log('Member loans page loading...');
+
+        // Check authentication
+        if (!authToken) {
+            console.log('No auth token found, redirecting to login');
+            window.location.href = 'login.html';
+        }
+
+        let userEligibility = {};
+        let hasActiveLoans = false;
+
+        // Show alert messages
+        function showAlert(message, type) {
+            type = type || 'success';
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type;
+            
+            const icon = type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'times-circle' : 'exclamation-triangle';
+            
+            alertDiv.innerHTML = '<i class="fas fa-' + icon + '"></i>' + message;
+            
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(function() {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+            
+            // Scroll to top to show alert
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return 'RWF ' + Math.round(amount).toLocaleString();
+        }
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                console.log('Loading user info...');
+                const response = await fetch(API_BASE + '/profile', {
+                    headers: { 'Authorization': authToken }
+                });
+                
+                console.log('Profile response status:', response.status);
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    console.log('User loaded:', user);
+                    document.getElementById('userName').textContent = `${user.first_name} ${user.last_name}`;
+                    document.getElementById('userAvatar').textContent = user.first_name.charAt(0).toUpperCase();
+                } else {
+                    throw new Error('Failed to load user info');
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                showAlert('Failed to load user information', 'error');
+                logout();
+            }
+        }
+
+        // Check for active loans
+        async function checkActiveLoans() {
+            try {
+                const response = await fetch(API_BASE + '/loans', {
+                    headers: { 'Authorization': authToken }
+                });
+
+                if (response.ok) {
+                    const loans = await response.json();
+                    // Check for any active loans (pending, approved, disbursed)
+                    hasActiveLoans = loans.some(loan => 
+                        ['pending', 'approved', 'disbursed'].includes(loan.status)
+                    );
+                    
+                    console.log('Has active loans:', hasActiveLoans);
+                    return hasActiveLoans;
+                } else {
+                    console.error('Failed to load loans');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error checking active loans:', error);
+                return false;
+            }
+        }
+
+        // Load dashboard data to get eligibility info
+        async function loadEligibility() {
+            console.log('Loading eligibility data...');
+            try {
+                // First check for active loans
+                await checkActiveLoans();
+
+                const response = await fetch(API_BASE + '/dashboard', {
+                    headers: { 'Authorization': authToken }
+                });
+
+                console.log('Dashboard response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Dashboard API error:', errorText);
+                    throw new Error('Failed to load eligibility data: ' + response.status);
+                }
+
+                const data = await response.json();
+                console.log('Dashboard data loaded:', data);
+                userEligibility = data.savings || {};
+                displayEligibility(data.savings || {});
+            } catch (error) {
+                console.error('Error loading eligibility:', error);
+                showAlert('Failed to load eligibility information: ' + error.message, 'error');
+            }
+        }
+
+        // Display eligibility information
+        function displayEligibility(savings) {
+            console.log('Displaying eligibility:', savings);
+            const currentBalance = savings.current_balance || 0;
+            const monthlyCommitment = savings.monthly_commitment || 0;
+            const maxEligible = currentBalance * 6; // Updated: 6x savings balance only
+
+            document.getElementById('currentBalance').textContent = formatCurrency(currentBalance);
+            document.getElementById('monthlyCommitment').textContent = formatCurrency(monthlyCommitment);
+            document.getElementById('maxEligible').textContent = formatCurrency(maxEligible);
+
+            // Determine eligibility status
+            const eligibleSection = document.getElementById('eligibleSection');
+            const ineligibleSection = document.getElementById('ineligibleSection');
+            const loanFormSection = document.getElementById('loanFormSection');
+            const activeLoanWarning = document.getElementById('activeLoanWarning');
+            const loanStatusElement = document.getElementById('loanStatus');
+
+            // Reset visibility
+            eligibleSection.style.display = 'block';
+            ineligibleSection.style.display = 'none';
+            loanFormSection.style.display = 'block';
+            activeLoanWarning.style.display = 'none';
+
+            let isEligible = true;
+            let ineligibilityReason = '';
+            let actions = '';
+
+            // Check various eligibility conditions
+            if (hasActiveLoans) {
+                isEligible = false;
+                ineligibilityReason = 'You already have an active loan. Only one loan is allowed at a time.';
+                actions = '<a href="member-my-loans.html" class="action-button"><i class="fas fa-eye"></i> View My Loans</a>';
+                loanStatusElement.textContent = 'Has Active Loan';
+                activeLoanWarning.style.display = 'block';
+            } else if (monthlyCommitment <= 0) {
+                isEligible = false;
+                ineligibilityReason = 'You must set a monthly savings commitment before applying for a loan.';
+                actions = '<a href="member-commitment.html" class="action-button"><i class="fas fa-edit"></i> Set Monthly Commitment</a>';
+                loanStatusElement.textContent = 'No Commitment Set';
+            } else if (currentBalance <= 0) {
+                isEligible = false;
+                ineligibilityReason = 'You must have savings in your account before applying for a loan. Your current balance is RWF 0.';
+                actions = '<p style="color: #92400e; margin-top: 1rem;">Start saving with your monthly commitment to build your loan eligibility.</p>';
+                loanStatusElement.textContent = 'No Savings Balance';
+            } else {
+                loanStatusElement.textContent = 'Eligible';
+            }
+
+            if (!isEligible) {
+                eligibleSection.style.display = 'none';
+                ineligibleSection.style.display = 'block';
+                loanFormSection.style.display = 'none';
+                
+                document.getElementById('ineligibilityReason').textContent = ineligibilityReason;
+                document.getElementById('ineligibilityActions').innerHTML = actions;
+            }
+
+            // Update form validation
+            const amountInput = document.getElementById('amount');
+            if (amountInput && isEligible) {
+                amountInput.max = maxEligible;
+                // Trigger validation if there's already a value
+                if (amountInput.value) {
+                    validateLoanAmount();
+                }
+            }
+        }
+
+        // Calculate monthly payment using compound interest
+        function calculateMonthlyPayment(principal, annualRate, months) {
+            const monthlyRate = (annualRate / 100) / 12;
+            if (monthlyRate === 0) return principal / months;
+            
+            const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                           (Math.pow(1 + monthlyRate, months) - 1);
+            return payment;
+        }
+
+        // Validate loan amount input
+        function validateLoanAmount() {
+            const amountInput = document.getElementById('amount');
+            const amountIcon = document.getElementById('amountIcon');
+            const amountMessage = document.getElementById('amountMessage');
+            const amount = parseFloat(amountInput.value) || 0;
+            
+            // Get current eligibility limits - Updated to only use 6x savings balance
+            const maxEligible = (userEligibility.current_balance || 0) * 6;
+            const minLoan = 10000;
+            
+            // Clear previous states
+            amountInput.classList.remove('valid', 'invalid');
+            amountIcon.classList.remove('valid', 'invalid');
+            amountMessage.classList.remove('valid', 'invalid');
+            
+            if (amount === 0) {
+                // No input yet
+                amountIcon.innerHTML = '';
+                amountMessage.textContent = '';
+                return false;
+            } else if (amount < minLoan) {
+                // Below minimum
+                amountInput.classList.add('invalid');
+                amountIcon.classList.add('invalid');
+                amountIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                amountMessage.classList.add('invalid');
+                amountMessage.textContent = `Minimum loan amount is ${formatCurrency(minLoan)}`;
+                return false;
+            } else if (amount > maxEligible) {
+                // Above maximum
+                amountInput.classList.add('invalid');
+                amountIcon.classList.add('invalid');
+                amountIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                amountMessage.classList.add('invalid');
+                amountMessage.textContent = `Maximum eligible loan is ${formatCurrency(maxEligible)} (6x your savings balance)`;
+                return false;
+            } else {
+                // Valid range
+                amountInput.classList.add('valid');
+                amountIcon.classList.add('valid');
+                amountIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                amountMessage.classList.add('valid');
+                amountMessage.textContent = `Valid loan amount (${formatCurrency(amount)})`;
+                return true;
+            }
+        }
+
+        // Update payment preview
+        function updatePaymentPreview() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const period = parseInt(document.getElementById('repaymentPeriod').value) || 0;
+            const interestRate = 5.0;
+            
+            // Validate the amount first
+            const isValidAmount = validateLoanAmount();
+            
+            const previewDiv = document.getElementById('paymentPreview');
+            
+            if (amount > 0 && period > 0 && isValidAmount) {
+                const monthlyPayment = calculateMonthlyPayment(amount, interestRate, period);
+                const totalAmount = monthlyPayment * period;
+                const totalInterest = totalAmount - amount;
+                
+                document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
+                document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+                document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+                
+                previewDiv.classList.add('show');
+            } else {
+                previewDiv.classList.remove('show');
+            }
+        }
+
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loanApplicationForm');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('Loan application form submitted');
+                    
+                    // Double check eligibility before submission
+                    if (hasActiveLoans) {
+                        showAlert('You already have an active loan. Please complete your current loan before applying for a new one.', 'error');
+                        return;
+                    }
+                    
+                    const submitBtn = document.getElementById('submitBtn');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    // Disable button and show loading
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Application...';
+
+                    const formData = new FormData(e.target);
+                    const loanData = {
+                        amount: parseFloat(formData.get('amount')),
+                        repayment_period: parseInt(formData.get('repaymentPeriod'))
+                    };
+
+                    console.log('Loan data:', loanData);
+
+                    // Client-side validation
+                    const isValidAmount = validateLoanAmount();
+                    if (!isValidAmount) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        return;
+                    }
+
+                    // Updated: Check against 6x savings balance only
+                    const maxEligible = (userEligibility.current_balance || 0) * 6;
+
+                    if (loanData.amount > maxEligible) {
+                        showAlert('Loan amount exceeds your eligibility limit of ' + formatCurrency(maxEligible), 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(API_BASE + '/loans/apply', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': authToken
+                            },
+                            body: JSON.stringify(loanData)
+                        });
+
+                        const result = await response.json();
+                        console.log('Loan application result:', result);
+
+                        if (response.ok) {
+                            showAlert(
+                                'Loan application submitted successfully! Amount: ' + formatCurrency(loanData.amount) + 
+                                ', Repayment Period: ' + loanData.repayment_period + ' months. Your application is now pending approval.', 
+                                'success'
+                            );
+                            e.target.reset();
+                            document.getElementById('paymentPreview').classList.remove('show');
+                            
+                            // Reload eligibility to check for active loans
+                            setTimeout(() => {
+                                loadEligibility();
+                            }, 1000);
+                        } else {
+                            showAlert(result.error || 'Failed to submit loan application', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error submitting loan application:', error);
+                        showAlert('Network error. Please check your connection and try again.', 'error');
+                    } finally {
+                        // Re-enable button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
+
+            // Event listeners for payment preview
+            const amountInput = document.getElementById('amount');
+            const periodSelect = document.getElementById('repaymentPeriod');
+            
+            if (amountInput) {
+                amountInput.addEventListener('input', updatePaymentPreview);
+            }
+            
+            if (periodSelect) {
+                periodSelect.addEventListener('change', updatePaymentPreview);
+            }
+
+            // Initialize page
+            console.log('Initializing page...');
+            loadUserInfo();
+            loadEligibility();
+        });
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

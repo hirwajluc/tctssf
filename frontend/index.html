@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCTSSF - Tumba Social Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5a4f 0%, #1e7e34 20%, #28a745 50%, #34ce57 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 450px;
+        }
+
+        /* Left Information Panel */
+        .info-panel {
+            background: linear-gradient(135deg, #1e7e34 0%, #28a745 50%, #20c997 100%);
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .logo-section h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-section p {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .features-list {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: slideInLeft 0.8s ease;
+            animation-delay: var(--delay);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .feature-icon i {
+            font-size: 16px;
+            color: white;
+        }
+
+        .feature-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-content p {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .stats-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Right Login Panel */
+        .login-panel {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .login-header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #28a745;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-wrapper i {
+            padding: 0 15px;
+            color: #a0aec0;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper:focus-within i {
+            color: #28a745;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            padding: 16px 15px 16px 0;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: #2d3748;
+            outline: none;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #a0aec0;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 50%, #155724 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .btn-login.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c53030;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #22543d;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .security-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .security-note i {
+            font-size: 20px;
+            color: #28a745;
+            margin-bottom: 8px;
+        }
+
+        .security-note p {
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.4;
+        }
+
+        .footer-info {
+            text-align: center;
+            margin-top: 20px;
+            color: #a0aec0;
+            font-size: 11px;
+        }
+
+        /* Loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #28a745;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr 400px;
+            }
+            
+            .info-panel {
+                padding: 30px;
+            }
+            
+            .login-panel {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel {
+                display: none;
+            }
+
+            .login-panel {
+                padding: 40px 30px;
+                height: 100vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+
+            .main-container {
+                border-radius: 0;
+                height: 100vh;
+            }
+
+            .login-panel {
+                padding: 30px 20px;
+            }
+
+            .login-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Left Information Panel -->
+        <div class="info-panel">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h1>RDB SLS</h1>
+                <p>Members Financial Platform</p>
+            </div>
+
+            <div class="features-list">
+                <div class="feature-item" style="--delay: 0.2s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Smart Savings</h3>
+                        <p>Automated monthly savings with flexible commitment options and competitive returns</p>
+                    </div>
+                </div>
+
+                <div class="feature-item" style="--delay: 0.4s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Social Solidarity</h3>
+                        <p>Community-driven social contributions supporting member welfare and emergency assistance</p>
+                    </div>
+                </div>
+
+                <div class="feature-item" style="--delay: 0.6s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Easy Loans</h3>
+                        <p>Quick loan approval process with competitive rates and flexible repayment terms</p>
+                    </div>
+                </div>
+
+                <div class="feature-item" style="--delay: 0.8s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Secure Platform</h3>
+                        <p>Bank-level security with encrypted transactions and protected member data</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Active Members</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">RWF 10M+</div>
+                        <div class="stat-label">Total Savings</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Satisfaction Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Platform Access</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Login Panel -->
+        <div class="login-panel">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to access your account</p>
+            </div>
+
+            <div id="errorMsg" class="error"></div>
+            <div id="successMsg" class="success"></div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                    <span>Sign In to Dashboard</span>
+                </button>
+            </form>
+
+            <div class="security-note">
+                <i class="fas fa-lock"></i>
+                <p>All transactions and personal data are protected.</p>
+            </div>
+
+            <div class="footer-info">
+                <p>&copy; 2025 RDB SLS. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auth functionality
+        const API_BASE_URL = '/api';
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.className = 'error show';
+            setTimeout(() => {
+                errorDiv.className = 'error';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMsg');
+            successDiv.textContent = message;
+            successDiv.className = 'success show';
+            setTimeout(() => {
+                successDiv.className = 'success';
+            }, 3000);
+        }
+
+        function showLoading(show = true) {
+            const overlay = document.getElementById('loadingOverlay');
+            const btn = document.getElementById('loginBtn');
+            const btnIcon = btn.querySelector('i');
+            
+            if (show) {
+                overlay.style.display = 'flex';
+                btn.classList.add('loading');
+                btn.disabled = true;
+                btnIcon.className = 'fas fa-spinner';
+                btn.querySelector('span').textContent = 'Signing In...';
+            } else {
+                overlay.style.display = 'none';
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btnIcon.className = 'fas fa-sign-in-alt';
+                btn.querySelector('span').textContent = 'Sign In to Dashboard';
+            }
+        }
+
+        async function login(email, password) {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                // Store authentication data
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+                showSuccess('Login successful! Redirecting...');
+
+                // Redirect based on user role
+                setTimeout(() => {
+                    if (data.user.role === 'member') {
+                        window.location.href = 'member-dashboard.html';
+                    } else if (data.user.role === 'admin' || data.user.role === 'superadmin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else if (data.user.role === 'treasurer') {
+                        window.location.href = 'treasurer-dashboard.html';
+                    } else {
+                        window.location.href = 'member-dashboard.html';
+                    }
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(error.message || 'Login failed. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('currentUser');
+            
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    // Redirect to appropriate dashboard
+                    if (userData.role === 'member') {
+                        window.location.href = 'member-dashboard.html';
+                    } else if (userData.role === 'admin' || userData.role === 'superadmin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else if (userData.role === 'treasurer') {
+                        window.location.href = 'treasurer-dashboard.html';
+                    }
+                } catch (error) {
+                    // Invalid stored data, clear it
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                }
+            }
+
+            // Handle login form submission
+            const loginForm = document.getElementById('loginForm');
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    showError('Please enter both email and password');
+                    return;
+                }
+
+                await login(email, password);
+            });
+
+            // Focus on email input
+            document.getElementById('email').focus();
+
+            // Add input animations
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Clear errors when user starts typing
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const errorDiv = document.getElementById('errorMsg');
+                    if (errorDiv.classList.contains('show')) {
+                        errorDiv.className = 'error';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

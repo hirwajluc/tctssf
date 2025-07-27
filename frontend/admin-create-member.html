@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Member - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Admin Portal</h2>
+            <p class="subtitle">System Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="admin-create-member.html" class="active"><i class="fas fa-user-plus"></i>Create Member</a></li>
+            <li><a href="admin-members.html"><i class="fas fa-users"></i>Member List</a></li>
+            <li><a href="admin-loans.html"><i class="fas fa-clock"></i>Pending Loans</a></li>
+            <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i>Reports</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-user-plus"></i>Create New Member</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span class="user-name" id="userName">Admin Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Create Member Form -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-user-plus"></i>
+                New Member Registration
+            </h2>
+            <div class="info-alert">
+                <div style="display: flex; align-items: center; color: #285e61;">
+                    <i class="fas fa-info-circle" style="margin-right: 12px; font-size: 18px;"></i>
+                    <div>
+                        <strong>Member Account Creation:</strong>
+                        <p style="margin: 4px 0 0 0; font-size: 14px;">Create a new member account with their basic information and initial savings commitment. A default password will be generated and should be shared securely with the new member.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="createMemberForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="firstName" name="first_name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="lastName" name="last_name" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userRole">User Role *</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i class="fas fa-shield-alt"></i>
+                            <select id="userRole" name="role" required onchange="toggleCommitmentField()">
+                                <option value="">Select user role</option>
+                                <option value="member">Member</option>
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Super Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="commitmentGroup" style="display: none;">
+                        <label for="monthlyCommitment">Monthly Savings Commitment (RWF) *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" id="monthlyCommitment" name="monthly_commitment" min="5000" step="1000">
+                        </div>
+                        <small style="color: #718096; font-size: 12px; margin-top: 4px; display: block;">
+                            Minimum: RWF 5,000. This will be automatically deducted from their salary.
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="form-row single" style="margin-top: 32px;">
+                    <button type="submit" class="btn btn-primary" style="max-width: 300px;">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>
+                        Create Member Account
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Account Creation Summary -->
+        <div class="content-section" id="summarySection" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-check-circle"></i>
+                Account Created Successfully
+            </h2>
+            <div style="background: #f0fff4; border: 1px solid #68d391; border-radius: 12px; padding: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4 style="color: #2d3748; margin-bottom: 8px;">Account Details:</h4>
+                        <p><strong>Account Number:</strong> <span id="accountNumber">-</span></p>
+                        <p><strong>Full Name:</strong> <span id="fullName">-</span></p>
+                        <p><strong>Email:</strong> <span id="memberEmail">-</span></p>
+                        <p><strong>Role:</strong> <span id="memberRole">-</span></p>
+                    </div>
+                    <div>
+                        <h4 style="color: #2d3748; margin-bottom: 8px;">Login Credentials:</h4>
+                        <p><strong>Default Password:</strong> <span id="defaultPassword" style="font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">-</span></p>
+                        <p style="color: #e53e3e; font-size: 14px; margin-top: 8px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Please share these credentials securely with the member and ask them to change the password on first login.
+                        </p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #68d391;">
+                    <button onclick="createAnother()" class="btn btn-primary" style="margin-right: 12px;">
+                        <i class="fas fa-plus"></i> Create Another Member
+                    </button>
+                    <a href="admin-members.html" class="btn" style="background: #e2e8f0; color: #4a5568; text-decoration: none;">
+                        <i class="fas fa-users"></i> View All Members
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Member Statistics
+            </h2>
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Total Members</h3>
+                        <div class="stat-icon balance">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalMembers">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-user-check"></i>
+                        <span id="activeMembers">-</span> active
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>This Month</h3>
+                        <div class="stat-icon commitment">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="monthlyRegistrations">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i>
+                        New registrations
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Avg. Commitment</h3>
+                        <div class="stat-icon contribution">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="avgCommitment">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-calculator"></i>
+                        Monthly average
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication and role
+            if (!requireAuth() || !requireRole(['admin', 'superadmin'])) return;
+            
+            // Initialize page
+            initializePage();
+            
+            // Setup role options based on current user
+            setupRoleOptions();
+            
+            // Load member statistics
+            loadMemberStats();
+            
+            // Setup form handler
+            setupCreateMemberForm();
+        });
+        
+        function setupRoleOptions() {
+            const currentUser = getCurrentUser();
+            const roleSelect = document.getElementById('userRole');
+            
+            if (currentUser.role === 'admin') {
+                // Admins can only create members
+                roleSelect.innerHTML = `
+                    <option value="">Select user role</option>
+                    <option value="member">Member</option>
+                `;
+            } else if (currentUser.role === 'superadmin') {
+                // SuperAdmins can create all types
+                roleSelect.innerHTML = `
+                    <option value="">Select user role</option>
+                    <option value="member">Member</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
+                `;
+            }
+        }
+        
+        function toggleCommitmentField() {
+            const roleSelect = document.getElementById('userRole');
+            const commitmentGroup = document.getElementById('commitmentGroup');
+            const commitmentInput = document.getElementById('monthlyCommitment');
+            
+            if (roleSelect.value === 'member') {
+                commitmentGroup.style.display = 'block';
+                commitmentInput.required = true;
+            } else {
+                commitmentGroup.style.display = 'none';
+                commitmentInput.required = false;
+                commitmentInput.value = '';
+            }
+        }
+        
+        async function loadMemberStats() {
+            try {
+                const data = await apiCall('/admin/reports');
+                
+                document.getElementById('totalMembers').textContent = data.stats.total_members || 0;
+                document.getElementById('activeMembers').textContent = data.stats.active_users || 0;
+                
+                // Calculate this month's registrations (simplified)
+                const thisMonth = new Date().getMonth();
+                const monthlyRegs = data.recent_activities.filter(activity => 
+                    activity.type === 'user_created' && 
+                    new Date(activity.date).getMonth() === thisMonth
+                ).length;
+                document.getElementById('monthlyRegistrations').textContent = monthlyRegs;
+                
+                // Calculate average commitment
+                const avgCommitment = data.monthly_data.length > 0 
+                    ? data.monthly_data.reduce((sum, member) => sum + member.commitment, 0) / data.monthly_data.length
+                    : 0;
+                document.getElementById('avgCommitment').textContent = formatCurrency(avgCommitment);
+                
+            } catch (error) {
+                console.error('Failed to load member stats:', error);
+            }
+        }
+        
+        function setupCreateMemberForm() {
+            const form = document.getElementById('createMemberForm');
+            form.addEventListener('submit', handleCreateMember);
+        }
+        
+        async function handleCreateMember(e) {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            showLoading(submitBtn);
+            
+            const formData = new FormData(e.target);
+            const memberData = {
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                role: formData.get('role')
+            };
+            
+            // Add monthly commitment for members
+            if (memberData.role === 'member') {
+                memberData.monthly_commitment = parseFloat(formData.get('monthly_commitment'));
+                
+                if (!memberData.monthly_commitment || memberData.monthly_commitment < 5000) {
+                    showError('Monthly commitment must be at least RWF 5,000');
+                    hideLoading(submitBtn, originalText);
+                    return;
+                }
+            }
+            
+            try {
+                const endpoint = memberData.role === 'member' ? '/admin/members' : '/admin/users';
+                const response = await apiCall(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(memberData)
+                });
+                
+                // Show success summary
+                showAccountCreationSummary(memberData, response);
+                
+                // Reload stats
+                loadMemberStats();
+                
+                showSuccess(`${memberData.role.charAt(0).toUpperCase() + memberData.role.slice(1)} created successfully!`);
+                
+            } catch (error) {
+                showError(error.message || 'Failed to create member');
+            } finally {
+                hideLoading(submitBtn, originalText);
+            }
+        }
+        
+        function showAccountCreationSummary(memberData, response) {
+            // Hide form section and show summary
+            document.querySelector('#createMemberForm').parentElement.style.display = 'none';
+            document.getElementById('summarySection').style.display = 'block';
+            
+            // Populate summary data
+            document.getElementById('accountNumber').textContent = response.account_number;
+            document.getElementById('fullName').textContent = `${memberData.first_name} ${memberData.last_name}`;
+            document.getElementById('memberEmail').textContent = memberData.email;
+            document.getElementById('memberRole').textContent = memberData.role.charAt(0).toUpperCase() + memberData.role.slice(1);
+            document.getElementById('defaultPassword').textContent = response.password;
+            
+            // Scroll to summary
+            document.getElementById('summarySection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function createAnother() {
+            // Reset form and show it again
+            document.getElementById('createMemberForm').reset();
+            document.querySelector('#createMemberForm').parentElement.style.display = 'block';
+            document.getElementById('summarySection').style.display = 'none';
+            
+            // Reset commitment field
+            toggleCommitmentField();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

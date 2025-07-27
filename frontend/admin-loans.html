@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Management - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2 id="portalTitle">Admin Portal</h2>
+            <p class="subtitle">System Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="admin-create-member.html"><i class="fas fa-user-plus"></i>Create Member</a></li>
+            <li><a href="admin-members.html"><i class="fas fa-users"></i>Member List</a></li>
+            <li><a href="admin-loans.html" class="active"><i class="fas fa-clock"></i>Loan Management</a></li>
+            <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i>Reports</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-clipboard-check"></i>Loan Management</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span class="user-name" id="userName">Admin Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Role Information Banner -->
+        <div id="roleInfoBanner" class="info-banner" style="margin-bottom: 24px; padding: 16px; border-radius: 8px; border-left: 4px solid #0066cc;">
+            <i class="fas fa-info-circle"></i>
+            <span id="roleInfoText">Loading your approval permissions...</span>
+        </div>
+        
+        <!-- Loan Statistics -->
+        <div class="stats-grid" style="margin-bottom: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div class="stat-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="stat-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; color: #4a5568;">Awaiting Your Approval</h3>
+                    <div class="stat-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, #ff6b6b, #ffd93d); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="yourPendingCount" style="font-size: 32px; font-weight: bold; color: #2d3748; margin-bottom: 8px;">0</div>
+                <div class="stat-change" style="color: #718096; font-size: 14px;">
+                    <i class="fas fa-user-check"></i>
+                    <span id="yourRoleText">Your queue</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="stat-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; color: #4a5568;">Total in Pipeline</h3>
+                    <div class="stat-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, #4ecdc4, #44a08d); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-stream"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="totalInPipeline" style="font-size: 32px; font-weight: bold; color: #2d3748; margin-bottom: 8px;">0</div>
+                <div class="stat-change" style="color: #718096; font-size: 14px;">
+                    <i class="fas fa-workflow"></i>
+                    All stages
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="stat-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; color: #4a5568;">Total Amount Pending</h3>
+                    <div class="stat-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="totalLoanAmount" style="font-size: 32px; font-weight: bold; color: #2d3748; margin-bottom: 8px;">RWF 0</div>
+                <div class="stat-change" style="color: #718096; font-size: 14px;">
+                    <i class="fas fa-calculator"></i>
+                    Your approval queue
+                </div>
+            </div>
+            
+            <div class="stat-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="stat-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; color: #4a5568;">Approved Today</h3>
+                    <div class="stat-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, #f093fb, #f5576c); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="approvedToday" style="font-size: 32px; font-weight: bold; color: #2d3748; margin-bottom: 8px;">0</div>
+                <div class="stat-change" style="color: #718096; font-size: 14px;">
+                    <i class="fas fa-calendar-day"></i>
+                    By you today
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loan Applications Table -->
+        <div class="content-section" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 class="section-title" style="margin-bottom: 0; color: #2d3748; font-size: 1.25rem; font-weight: 600;">
+                    <i class="fas fa-list" style="color: #667eea; margin-right: 8px;"></i>
+                    <span id="tableTitle">Loan Applications</span>
+                </h2>
+                <button onclick="refreshLoans()" class="btn" style="background: #f7fafc; color: #4a5568; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-refresh"></i> Refresh
+                </button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="table" id="pendingLoansTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-user" style="margin-right: 8px;"></i>Member</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Account</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-money-bill" style="margin-right: 8px;"></i>Amount</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>Period</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-tasks" style="margin-right: 8px;"></i>Approval Status</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-clock" style="margin-right: 8px;"></i>Applied</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Details</th>
+                            <th style="padding: 12px; text-align: left;"><i class="fas fa-cogs" style="margin-right: 8px;"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingLoansBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #667eea;"></i>
+                                <p style="margin-top: 8px; color: #718096;">Loading loan applications...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loan Details Modal -->
+    <div id="loanDetailsModal" class="edit-modal hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal-content" style="max-width: 900px; background: white; border-radius: 12px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class="fas fa-info-circle"></i> Loan Application Details</h3>
+                <button class="close-btn" onclick="closeLoanDetailsModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div id="loanDetailsContent" style="padding: 20px;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <div class="modal-actions" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn-cancel" onclick="closeLoanDetailsModal()" style="padding: 8px 16px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;">Close</button>
+                <button type="button" class="btn btn-reject" onclick="showRejectModal()" id="rejectBtn" style="padding: 8px 16px; background: #e53e3e; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-times" style="margin-right: 8px;"></i>
+                    Reject Loan
+                </button>
+                <button type="button" class="btn btn-approve" onclick="approveCurrentLoan()" id="approveBtn" style="padding: 8px 16px; background: #48bb78; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>
+                    <span id="approveBtnText">Approve Loan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejection Modal -->
+    <div id="rejectionModal" class="edit-modal hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="modal-content" style="max-width: 500px; background: white; border-radius: 12px;">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;"><i class="fas fa-times-circle"></i> Reject Loan Application</h3>
+                <button class="close-btn" onclick="closeRejectModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 24px;">
+                <p style="margin-bottom: 16px; color: #4a5568;">Please provide a reason for rejecting this loan application:</p>
+                <textarea id="rejectionReason" placeholder="Enter rejection reason..." 
+                    style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; resize: vertical; box-sizing: border-box;"
+                    required></textarea>
+                <p style="margin-top: 8px; font-size: 14px; color: #718096;">This reason will be visible to the member and other approvers.</p>
+            </div>
+            <div class="modal-actions" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn-cancel" onclick="closeRejectModal()" style="padding: 8px 16px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;">Cancel</button>
+                <button type="button" class="btn btn-reject" onclick="confirmRejectLoan()" style="padding: 8px 16px; background: #e53e3e; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-times" style="margin-right: 8px;"></i>
+                    Confirm Rejection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let pendingLoans = [];
+        let currentLoanId = null;
+        let userRole = '';
+        let currentUser = {};
+        
+        // Check authentication
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== ADMIN LOANS PAGE INITIALIZATION ===');
+            console.log('Token exists:', !!token);
+            console.log('User data:', user);
+            console.log('User role:', user.role);
+            
+            // Check authentication and role
+            if (!token || !['admin', 'superadmin', 'treasurer'].includes(user.role)) {
+                console.error('Authentication or role check failed');
+                window.location.href = '/';
+                return;
+            }
+            
+            // Set global variables
+            userRole = user.role;
+            currentUser = user;
+            
+            console.log('Authentication passed - initializing page');
+            
+            // Update user info in header
+            updateUserInfo();
+            
+            // Initialize page
+            updateUIForRole();
+            
+            // Load loan data with timeout
+            loadPendingLoansWithTimeout();
+        });
+        
+        function updateUserInfo() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user.first_name && user.last_name) {
+                userName.textContent = `${user.first_name} ${user.last_name}`;
+                userAvatar.textContent = user.first_name.charAt(0).toUpperCase();
+            }
+        }
+        
+        function updateUIForRole() {
+            const roleInfoBanner = document.getElementById('roleInfoBanner');
+            const roleInfoText = document.getElementById('roleInfoText');
+            const portalTitle = document.getElementById('portalTitle');
+            const tableTitle = document.getElementById('tableTitle');
+            const yourRoleText = document.getElementById('yourRoleText');
+            
+            // Get user email to determine specific role
+            const userEmail = currentUser.email || '';
+            let specificRole = userRole;
+            
+            // Determine specific role based on email for admin users
+            if (userRole === 'admin') {
+                if (userEmail.includes('vicepresident') || userEmail.includes('vice')) {
+                    specificRole = 'vice_president';
+                } else if (userEmail.includes('president') && !userEmail.includes('vice')) {
+                    specificRole = 'president';
+                } else {
+                    specificRole = 'admin'; // General admin
+                }
+            }
+            
+            console.log('User role:', userRole, 'Specific role:', specificRole, 'Email:', userEmail);
+            
+            switch(specificRole) {
+                case 'treasurer':
+                    roleInfoText.textContent = 'As Treasurer, you handle first-stage approvals. Approved loans move to Vice-President.';
+                    portalTitle.textContent = 'Treasurer Portal';
+                    tableTitle.textContent = 'Loans Awaiting Treasurer Approval';
+                    yourRoleText.textContent = 'Treasurer queue';
+                    roleInfoBanner.style.background = '#e6f3ff';
+                    roleInfoBanner.style.color = '#0066cc';
+                    break;
+                case 'vice_president':
+                    roleInfoText.textContent = 'As Vice-President, you approve loans after treasurer approval. Approved loans move to President.';
+                    portalTitle.textContent = 'Vice-President Portal';
+                    tableTitle.textContent = 'Loans Awaiting Vice-President Approval';
+                    yourRoleText.textContent = 'VP queue';
+                    roleInfoBanner.style.background = '#f0fff4';
+                    roleInfoBanner.style.color = '#006600';
+                    break;
+                case 'president':
+                    roleInfoText.textContent = 'As President, you provide final approval for loans after vice-president approval.';
+                    portalTitle.textContent = 'President Portal';
+                    tableTitle.textContent = 'Loans Awaiting President Approval';
+                    yourRoleText.textContent = 'President queue';
+                    roleInfoBanner.style.background = '#fff5f5';
+                    roleInfoBanner.style.color = '#cc0000';
+                    break;
+                case 'admin':
+                    roleInfoText.textContent = 'As Admin, you can approve loans after treasurer approval. Contact admin to set your specific role.';
+                    portalTitle.textContent = 'Admin Portal';
+                    tableTitle.textContent = 'Loans Awaiting Admin Approval';
+                    yourRoleText.textContent = 'Admin queue';
+                    roleInfoBanner.style.background = '#f0fff4';
+                    roleInfoBanner.style.color = '#006600';
+                    break;
+                case 'superadmin':
+                    roleInfoText.textContent = 'As Super Admin, you can see all loans and approve at any stage.';
+                    portalTitle.textContent = 'Super Admin Portal';
+                    tableTitle.textContent = 'All Loan Applications';
+                    yourRoleText.textContent = 'All queues';
+                    roleInfoBanner.style.background = '#fff5f5';
+                    roleInfoBanner.style.color = '#cc0000';
+                    break;
+                default:
+                    roleInfoText.textContent = 'Role permissions loading...';
+                    break;
+            }
+        }
+        
+        async function loadPendingLoansWithTimeout() {
+            const loadingTimeout = setTimeout(() => {
+                console.warn('Loading timeout reached - showing error state');
+                showLoadingError('Request timeout - the server is taking too long to respond');
+            }, 10000); // 10 second timeout
+            
+            try {
+                await loadPendingLoans();
+                clearTimeout(loadingTimeout);
+            } catch (error) {
+                clearTimeout(loadingTimeout);
+                console.error('Failed to load loans:', error);
+                showLoadingError(error.message);
+            }
+        }
+        
+        async function loadPendingLoans() {
+            try {
+                console.log('=== LOADING PENDING LOANS ===');
+                console.log('Current user:', currentUser);
+                console.log('User role:', userRole);
+                console.log('Auth token exists:', !!token);
+                
+                const response = await apiCall('/admin/loans/pending');
+                const loans = response && Array.isArray(response) ? response : [];
+                
+                console.log('Loans response:', response);
+                console.log('Processed loans:', loans);
+                
+                pendingLoans = loans;
+                displayPendingLoans(loans);
+                updateLoanStats(loans);
+                
+            } catch (error) {
+                console.error('=== LOAN LOADING ERROR ===');
+                console.error('Error details:', {
+                    message: error.message,
+                    name: error.name,
+                    userRole: userRole,
+                    hasToken: !!token
+                });
+                
+                showLoadingError(error.message);
+            }
+        }
+        
+        function showLoadingError(errorMessage) {
+            const tbody = document.getElementById('pendingLoansBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #e53e3e; margin-bottom: 16px;"></i>
+                        <h4 style="color: #e53e3e; margin-bottom: 8px;">Failed to Load Loans</h4>
+                        <p style="color: #718096; margin-bottom: 16px;">${errorMessage}</p>
+                        <button onclick="refreshLoans()" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-refresh"></i> Try Again
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            // Reset stats
+            document.getElementById('yourPendingCount').textContent = '0';
+            document.getElementById('totalInPipeline').textContent = '0';
+            document.getElementById('totalLoanAmount').textContent = 'RWF 0';
+            document.getElementById('approvedToday').textContent = '0';
+            
+            // Show error message
+            showError(`Failed to load loan applications: ${errorMessage}`);
+        }
+        
+        function displayPendingLoans(loans) {
+            const tbody = document.getElementById('pendingLoansBody');
+            
+            if (loans.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 32px; color: #48bb78; margin-bottom: 16px;"></i>
+                            <h4 style="color: #48bb78; margin-bottom: 8px;">No Pending Applications</h4>
+                            <p style="color: #718096;">There are currently no loan applications in your approval queue.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = loans.map(loan => `
+                <tr data-loan-id="${loan.id}" style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 12px;">
+                        <span style="display: flex; align-items: center;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; margin-right: 12px;">
+                                ${loan.member_name ? loan.member_name.split(' ').map(n => n[0]).join('') : 'N/A'}
+                            </div>
+                            ${loan.member_name || 'Unknown Member'}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;"><strong>${loan.account_number || 'N/A'}</strong></td>
+                    <td style="padding: 12px;"><strong style="color: #667eea;">${formatCurrency(loan.amount || 0)}</strong></td>
+                    <td style="padding: 12px;">${loan.repayment_period || 0} months</td>
+                    <td style="padding: 12px;">${getApprovalStatusHTML(loan)}</td>
+                    <td style="padding: 12px;">${formatDate(loan.created_at)}</td>
+                    <td style="padding: 12px;">
+                        <button class="btn-small" style="background: #e6f3ff; color: #0066cc; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" onclick="viewLoanDetails(${loan.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                    <td style="padding: 12px;">
+                        ${getActionButtonsHTML(loan)}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function getApprovalStatusHTML(loan) {
+            const stages = [
+                { key: 'treasurer', label: 'Treasurer', approved: loan.treasurer_approved_by, date: loan.treasurer_approved_at },
+                { key: 'vice_president', label: 'Vice-President', approved: loan.vice_president_approved_by, date: loan.vice_president_approved_at },
+                { key: 'president', label: 'President', approved: loan.president_approved_by, date: loan.president_approved_at }
+            ];
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 4px;">';
+            
+            stages.forEach(stage => {
+                if (stage.approved) {
+                    html += `<div style="display: flex; align-items: center; font-size: 12px;">
+                        <i class="fas fa-check-circle" style="color: #48bb78; margin-right: 6px;"></i>
+                        <span style="color: #2d3748;">${stage.label}: ${stage.approved}</span>
+                    </div>`;
+                } else if (loan.next_approver === stage.key) {
+                    html += `<div style="display: flex; align-items: center; font-size: 12px;">
+                        <i class="fas fa-clock" style="color: #ed8936; margin-right: 6px;"></i>
+                        <span style="color: #2d3748;"><strong>Pending: ${stage.label}</strong></span>
+                    </div>`;
+                } else {
+                    html += `<div style="display: flex; align-items: center; font-size: 12px;">
+                        <i class="fas fa-circle" style="color: #cbd5e0; margin-right: 6px;"></i>
+                        <span style="color: #a0aec0;">${stage.label}: Waiting</span>
+                    </div>`;
+                }
+            });
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function getActionButtonsHTML(loan) {
+            if (!loan.can_current_user_approve) {
+                return '<span style="color: #a0aec0; font-size: 14px;">Not your turn</span>';
+            }
+            
+            return `
+                <button class="btn-small btn-approve" style="background: #48bb78; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 8px;" onclick="approveLoan(${loan.id})">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="btn-small btn-reject" style="background: #e53e3e; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" onclick="showRejectModalForLoan(${loan.id})">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            `;
+        }
+        
+        function updateLoanStats(loans) {
+            const yourPendingCount = loans.filter(loan => loan.can_current_user_approve).length;
+            const totalInPipeline = loans.length;
+            const totalAmount = loans.filter(loan => loan.can_current_user_approve)
+                .reduce((sum, loan) => sum + (loan.amount || 0), 0);
+            
+            document.getElementById('yourPendingCount').textContent = yourPendingCount;
+            document.getElementById('totalInPipeline').textContent = totalInPipeline;
+            document.getElementById('totalLoanAmount').textContent = formatCurrency(totalAmount);
+            
+            // For approved today, we'll set to 0 for now
+            document.getElementById('approvedToday').textContent = '0';
+        }
+        
+        async function viewLoanDetails(loanId) {
+            const loan = pendingLoans.find(l => l.id === loanId);
+            if (!loan) {
+                showError('Loan not found');
+                return;
+            }
+            
+            currentLoanId = loanId;
+            
+            try {
+                // Get member details
+                let memberData;
+                try {
+                    memberData = await apiCall(`/admin/users/${loan.user_id}`);
+                } catch (error) {
+                    console.warn('Could not load member details:', error.message);
+                    memberData = {
+                        email: 'Not available',
+                        phone: 'Not available',
+                        is_active: true
+                    };
+                }
+                
+                const detailsContent = document.getElementById('loanDetailsContent');
+                detailsContent.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div>
+                            <h4 style="color: #2d3748; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                                <i class="fas fa-user"></i> Member Information
+                            </h4>
+                            <p><strong>Name:</strong> ${loan.member_name || 'N/A'}</p>
+                            <p><strong>Account:</strong> ${loan.account_number || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${memberData.email || 'Not available'}</p>
+                            <p><strong>Phone:</strong> ${memberData.phone || 'Not provided'}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="status" style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; ${memberData.is_active ? 'background: #c6f6d5; color: #22543d;' : 'background: #fed7d7; color: #742a2a;'}">
+                                    ${memberData.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style="color: #2d3748; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                                <i class="fas fa-hand-holding-usd"></i> Loan Details
+                            </h4>
+                            <p><strong>Requested Amount:</strong> ${formatCurrency(loan.amount || 0)}</p>
+                            <p><strong>Repayment Period:</strong> ${loan.repayment_period || 0} months</p>
+                            <p><strong>Monthly Payment:</strong> ${formatCurrency(loan.monthly_payment || 0)}</p>
+                            <p><strong>Applied On:</strong> ${formatDate(loan.created_at)}</p>
+                            <p><strong>Current Status:</strong> 
+                                <span class="status" style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #ffd3a5; color: #744210;">
+                                    ${getStatusLabel(loan.status)}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f7fafc; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <h4 style="color: #2d3748; margin-bottom: 16px;">
+                            <i class="fas fa-tasks"></i> Approval Timeline
+                        </h4>
+                        ${getApprovalTimelineHTML(loan)}
+                    </div>
+                    
+                    ${loan.rejection_reason ? `
+                    <div style="background: #fed7d7; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                        <h4 style="color: #e53e3e; margin-bottom: 8px;">
+                            <i class="fas fa-times-circle"></i> Rejection Details
+                        </h4>
+                        <p><strong>Rejected by:</strong> ${loan.rejected_by || 'N/A'}</p>
+                        <p><strong>Rejection date:</strong> ${formatDate(loan.rejected_at)}</p>
+                        <p><strong>Reason:</strong> ${loan.rejection_reason}</p>
+                    </div>
+                    ` : ''}
+                `;
+                
+                // Update action buttons
+                const approveBtn = document.getElementById('approveBtn');
+                const rejectBtn = document.getElementById('rejectBtn');
+                const approveBtnText = document.getElementById('approveBtnText');
+                
+                if (loan.can_current_user_approve) {
+                    approveBtn.style.display = 'inline-block';
+                    rejectBtn.style.display = 'inline-block';
+                    approveBtnText.textContent = getApproveButtonText(loan.next_approver);
+                } else {
+                    approveBtn.style.display = 'none';
+                    rejectBtn.style.display = 'none';
+                }
+                
+                document.getElementById('loanDetailsModal').classList.remove('hidden');
+                
+            } catch (error) {
+                showError('Failed to load loan details: ' + error.message);
+            }
+        }
+        
+        function getApprovalTimelineHTML(loan) {
+            const stages = [
+                { 
+                    key: 'treasurer', 
+                    label: 'Treasurer Approval', 
+                    icon: 'fas fa-coins',
+                    approved: loan.treasurer_approved_by, 
+                    date: loan.treasurer_approved_at 
+                },
+                { 
+                    key: 'vice_president', 
+                    label: 'Vice-President Approval', 
+                    icon: 'fas fa-user-tie',
+                    approved: loan.vice_president_approved_by, 
+                    date: loan.vice_president_approved_at 
+                },
+                { 
+                    key: 'president', 
+                    label: 'President Approval', 
+                    icon: 'fas fa-crown',
+                    approved: loan.president_approved_by, 
+                    date: loan.president_approved_at 
+                }
+            ];
+            
+            let html = '<div style="display: flex; justify-content: space-between; position: relative;">';
+            
+            stages.forEach((stage, index) => {
+                const isApproved = !!stage.approved;
+                const isCurrent = loan.next_approver === stage.key;
+                const isPast = index < stages.findIndex(s => s.key === loan.next_approver);
+                
+                html += `
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1; position: relative;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; ${
+                            isApproved ? 'background: #48bb78; color: white;' :
+                            isCurrent ? 'background: #ed8936; color: white;' :
+                            'background: #e2e8f0; color: #a0aec0;'
+                        }">
+                            <i class="${stage.icon}" style="font-size: 18px;"></i>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-weight: 600; font-size: 14px; color: #2d3748; margin-bottom: 4px;">
+                                ${stage.label}
+                            </div>
+                            ${isApproved ? `
+                                <div style="font-size: 12px; color: #48bb78;">
+                                    ✓ ${stage.approved}
+                                </div>
+                                <div style="font-size: 11px; color: #718096;">
+                                    ${formatDate(stage.date)}
+                                </div>
+                            ` : isCurrent ? `
+                                <div style="font-size: 12px; color: #ed8936; font-weight: 600;">
+                                    Pending Review
+                                </div>
+                            ` : `
+                                <div style="font-size: 12px; color: #a0aec0;">
+                                    Awaiting
+                                </div>
+                            `}
+                        </div>
+                        ${index < stages.length - 1 ? `
+                            <div style="position: absolute; top: 25px; left: calc(50% + 25px); width: calc(100% - 50px); height: 2px; background: ${
+                                isPast || isApproved ? '#48bb78' : '#e2e8f0'
+                            };"></div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function getStatusLabel(status) {
+            const statusLabels = {
+                'pending': 'Awaiting Treasurer',
+                'treasurer_approved': 'Awaiting Vice-President',
+                'vice_president_approved': 'Awaiting President',
+                'president_approved': 'Fully Approved',
+                'rejected': 'Rejected',
+                'disbursed': 'Disbursed'
+            };
+            return statusLabels[status] || status;
+        }
+        
+        function getApproveButtonText(nextApprover) {
+            const buttonTexts = {
+                'treasurer': 'Approve as Treasurer',
+                'vice_president': 'Approve as Vice-President',
+                'president': 'Approve as President'
+            };
+            return buttonTexts[nextApprover] || 'Approve Loan';
+        }
+        
+        function closeLoanDetailsModal() {
+            document.getElementById('loanDetailsModal').classList.add('hidden');
+            currentLoanId = null;
+        }
+        
+        function showRejectModal() {
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('rejectionModal').classList.remove('hidden');
+        }
+        
+        function showRejectModalForLoan(loanId) {
+            currentLoanId = loanId;
+            showRejectModal();
+        }
+        
+        function closeRejectModal() {
+            document.getElementById('rejectionModal').classList.add('hidden');
+            document.getElementById('rejectionReason').value = '';
+        }
+        
+        async function approveLoan(loanId) {
+            const loan = pendingLoans.find(l => l.id === loanId);
+            if (!loan) {
+                showError('Loan not found');
+                return;
+            }
+            
+            const actionText = getApproveButtonText(loan.next_approver);
+            
+            if (confirm(`${actionText} for ${loan.member_name || 'Unknown Member'}?\n\nAmount: ${formatCurrency(loan.amount || 0)}`)) {
+                try {
+                    // Try the new process endpoint first
+                    try {
+                        await apiCall(`/admin/loans/${loanId}/process`, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'approve' })
+                        });
+                    } catch (processError) {
+                        // Fallback to old approve endpoint
+                        console.log('Process endpoint failed, trying legacy approve endpoint...');
+                        await apiCall(`/admin/loans/${loanId}/approve`, {
+                            method: 'POST'
+                        });
+                    }
+                    
+                    showSuccess('Loan approved successfully!');
+                    loadPendingLoans();
+                    if (currentLoanId === loanId) {
+                        closeLoanDetailsModal();
+                    }
+                } catch (error) {
+                    showError(error.message || 'Failed to approve loan');
+                }
+            }
+        }
+        
+        async function confirmRejectLoan() {
+            const reason = document.getElementById('rejectionReason').value.trim();
+            if (!reason) {
+                showError('Please provide a rejection reason');
+                return;
+            }
+            
+            if (!currentLoanId) return;
+            
+            const loan = pendingLoans.find(l => l.id === currentLoanId);
+            if (!loan) return;
+            
+            try {
+                // Try the new process endpoint first
+                try {
+                    await apiCall(`/admin/loans/${currentLoanId}/process`, {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            action: 'reject',
+                            reason: reason
+                        })
+                    });
+                } catch (processError) {
+                    // Fallback to old reject endpoint
+                    console.log('Process endpoint failed, trying legacy reject endpoint...');
+                    await apiCall(`/admin/loans/${currentLoanId}/reject`, {
+                        method: 'POST',
+                        body: JSON.stringify({ reason: reason })
+                    });
+                }
+                
+                showSuccess('Loan rejected successfully.');
+                loadPendingLoans();
+                closeRejectModal();
+                
+                if (document.getElementById('loanDetailsModal').classList.contains('hidden') === false) {
+                    closeLoanDetailsModal();
+                }
+            } catch (error) {
+                showError(error.message || 'Failed to reject loan');
+            }
+        }
+        
+        function approveCurrentLoan() {
+            if (currentLoanId) {
+                approveLoan(currentLoanId);
+            }
+        }
+        
+        function refreshLoans() {
+            console.log('Refreshing loans...');
+            // Reset the table to loading state
+            document.getElementById('pendingLoansBody').innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #667eea;"></i>
+                        <p style="margin-top: 8px; color: #718096;">Refreshing loan applications...</p>
+                    </td>
+                </tr>
+            `;
+            
+            loadPendingLoansWithTimeout();
+        }
+        
+        // Utility functions
+        function formatCurrency(amount) {
+            if (typeof amount !== 'number' || isNaN(amount)) {
+                return 'RWF 0';
+            }
+            return 'RWF ' + new Intl.NumberFormat().format(amount);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'N/A';
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return 'N/A';
+            }
+        }
+        
+        function createEmptyTableRow(colSpan, message, icon = 'fas fa-info-circle') {
+            return `
+                <tr>
+                    <td colspan="${colSpan}" style="text-align: center; padding: 40px;">
+                        <i class="${icon}" style="font-size: 32px; color: #718096; margin-bottom: 16px;"></i>
+                        <p style="color: #718096;">${message}</p>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        // Close modals when clicking outside
+        document.getElementById('loanDetailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoanDetailsModal();
+            }
+        });
+        
+        document.getElementById('rejectionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRejectModal();
+            }
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('rejectionModal').classList.contains('hidden')) {
+                    closeRejectModal();
+                } else if (!document.getElementById('loanDetailsModal').classList.contains('hidden')) {
+                    closeLoanDetailsModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

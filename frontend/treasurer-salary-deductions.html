@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Deductions - Solidarity Fund</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary { border-left-color: #667eea; }
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.warning { border-left-color: #ffc107; }
+        .stat-card.danger { border-left-color: #dc3545; }
+        .stat-card.info { border-left-color: #17a2b8; }
+
+        .stat-card .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); }
+        .stat-card.info .stat-icon { background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); }
+
+        .stat-card .stat-content {
+            flex: 1;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Action Cards */
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 280px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .action-card .action-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .action-card p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* Status Cards */
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 280px;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .status-card .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .status-badge.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-badge.info {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        /* Responsive Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .table thead th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .table tbody td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        .table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* File Upload Area */
+        .file-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .file-upload-area:hover,
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 16px;
+        }
+        
+        .file-upload-area p {
+            margin: 8px 0;
+            color: #333;
+        }
+        
+        .file-upload-area small {
+            color: #666;
+        }
+        
+        /* Selected File Display */
+        .selected-file {
+            background: #e8f5e8;
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .selected-file i {
+            color: #4caf50;
+            font-size: 1.2rem;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #667eea;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .empty-state p {
+            margin-bottom: 25px;
+            color: #6c757d;
+        }
+
+        /* Delete confirmation styles */
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-box i {
+            color: #856404;
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .warning-box .warning-content {
+            flex: 1;
+        }
+
+        .warning-box .warning-content h4 {
+            margin: 0 0 8px 0;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .warning-box .warning-content p {
+            margin: 0;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        /* Password input styling for delete modal */
+        .password-input-group {
+            position: relative;
+        }
+
+        .password-input-group .form-input {
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: #495057;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .action-card,
+            .status-card {
+                min-height: 250px;
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .table {
+                min-width: 600px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card .stat-value {
+                font-size: 24px;
+            }
+
+            .action-card .action-icon,
+            .status-card .status-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .table {
+                min-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-handshake"></i>
+            <h2>Treasurer Portal</h2>
+            <p class="subtitle">Financial Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="treasurer-dashboard.html"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="treasurer-loans.html"><i class="fas fa-hand-holding-usd"></i>Loan Approvals</a></li>
+            <li><a href="treasurer-salary-deductions.html" class="active"><i class="fas fa-money-bill-wave"></i>Salary Deductions</a></li>
+            <li><a href="treasurer-members.html"><i class="fas fa-users"></i>Members Summary</a></li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-money-bill-wave"></i>Salary Deductions Management</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">T</div>
+                <span class="user-name" id="userName">Treasurer Name</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <div id="errorMsg" class="error hidden"></div>
+        <div id="successMsg" class="success hidden"></div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Actions Section -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3>Quick Actions</h3>
+                <p>Generate new salary deduction lists for payroll processing</p>
+                <button class="btn btn-primary" onclick="showGenerateModal()">
+                    <i class="fas fa-plus"></i>
+                    Generate New List
+                </button>
+            </div>
+            
+            <div class="status-card">
+                <div class="status-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h3>System Status</h3>
+                <p id="systemStatus">Ready to process salary deductions</p>
+                <div id="systemBadge">
+                    <span class="status-badge success">System Ready</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Salary Deduction Lists -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-list"></i>
+                Salary Deduction Lists
+            </h2>
+            <div class="table-container">
+                <table class="table" id="listsTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-calendar" style="margin-right: 8px;"></i>Month/Year</th>
+                            <th><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Status</th>
+                            <th><i class="fas fa-users" style="margin-right: 8px;"></i>Total Members</th>
+                            <th><i class="fas fa-money-bill" style="margin-right: 8px;"></i>Total Amount</th>
+                            <th><i class="fas fa-clock" style="margin-right: 8px;"></i>Generated Date</th>
+                            <th><i class="fas fa-user" style="margin-right: 8px;"></i>Generated By</th>
+                            <th><i class="fas fa-cogs" style="margin-right: 8px;"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listsTableBody">
+                        <!-- Table content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No Salary Deduction Lists Found</h3>
+                <p>Generate your first salary deduction list to get started.</p>
+                <button class="btn btn-primary" onclick="showGenerateModal()">
+                    <i class="fas fa-plus"></i>
+                    Generate First List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate List Modal -->
+    <div id="generateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Generate Salary Deduction List</h3>
+                <button class="modal-close" onclick="closeGenerateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modalMonthInput">Select Month:</label>
+                    <input type="month" id="modalMonthInput" class="form-input" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeGenerateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="generateList()">
+                    <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                    Generate List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Processed File Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-upload"></i> Upload Processed Salary File</h3>
+                <button class="modal-close" onclick="closeUploadModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p><strong>Click to select CSV file or drag and drop</strong></p>
+                    <small>Only CSV files are allowed</small>
+                    <input type="file" id="fileInput" accept=".csv" onchange="handleFileSelect(event)" style="display: none;">
+                </div>
+                <div id="selectedFile" class="selected-file" style="display: none;">
+                    <i class="fas fa-file-csv"></i>
+                    <span>Selected file: <strong id="fileName"></strong></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                <button class="btn btn-success" onclick="uploadProcessedFile()" disabled id="uploadBtn">
+                    <i class="fas fa-upload" style="margin-right: 8px;"></i>
+                    Upload Processed File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header danger">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="warning-content">
+                        <h4>Warning: This action cannot be undone</h4>
+                        <p>You are about to permanently delete the salary deduction list for <strong id="deleteMonthYear"></strong>. This will remove all associated member deduction data.</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deletePasswordInput">Enter your password to confirm deletion:</label>
+                    <div class="password-input-group">
+                        <input type="password" id="deletePasswordInput" class="form-input" placeholder="Your password" required>
+                        <button type="button" class="password-toggle" onclick="toggleDeletePassword()">
+                            <i class="fas fa-eye" id="deletePasswordToggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">
+                    <i class="fas fa-trash" style="margin-right: 8px;"></i>
+                    Delete List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> <span id="detailsModalTitle">Salary Deduction Details</span></h3>
+                <button class="modal-close" onclick="closeDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="detailsLoading" style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea; margin-bottom: 15px;"></i>
+                    <p>Loading member details...</p>
+                </div>
+                <div id="detailsContent" style="display: none;">
+                    <!-- Summary Section -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4 style="margin: 0 0 5px 0; color: #667eea;">Total Members</h4>
+                            <p id="detailsTotalMembers" style="margin: 0; font-size: 1.5rem; font-weight: bold;">0</p>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4 style="margin: 0 0 5px 0; color: #28a745;">Total Amount</h4>
+                            <p id="detailsTotalAmount" style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #28a745;">RWF 0</p>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4 style="margin: 0 0 5px 0; color: #ffc107;">Avg. Deduction</h4>
+                            <p id="detailsAvgAmount" style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #ffc107;">RWF 0</p>
+                        </div>
+                    </div>
+
+                    <!-- Members Table -->
+                    <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table" id="detailsTable">
+                            <thead>
+                                <tr>
+                                    <th>Account #</th>
+                                    <th>Member Name</th>
+                                    <th>Monthly Savings</th>
+                                    <th>Social Contribution</th>
+                                    <th>Loan Payment</th>
+                                    <th>Total Deduction</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailsTableBody">
+                                <!-- Content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="detailsError" style="display: none; text-align: center; padding: 40px; color: #dc3545;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                    <p>Failed to load member details</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" onclick="exportDetailsToCSV()" id="exportDetailsBtn" style="display: none;">
+                    <i class="fas fa-download"></i>
+                    Export Details
+                </button>
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('authToken');
+        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        let currentUploadListId = null;
+        let currentDeleteListId = null;
+        let currentDeleteMonthYear = null;
+        
+        if (!token || user.role !== 'treasurer') {
+            window.location.href = '/';
+        }
+        
+        // Set current month as default
+        const now = new Date();
+        const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            document.getElementById('modalMonthInput').value = currentMonth;
+            loadStatsAndLists();
+        });
+        
+        // Update user info in header
+        function updateUserInfo() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user.first_name && user.last_name) {
+                userName.textContent = `${user.first_name} ${user.last_name}`;
+                userAvatar.textContent = user.first_name.charAt(0).toUpperCase();
+            }
+        }
+        
+        // Load stats and lists
+        async function loadStatsAndLists() {
+            await Promise.all([loadStats(), loadLists()]);
+        }
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await apiCall('/treasurer/dashboard');
+                createStatsCards(response);
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Create stats cards
+        function createStatsCards(data) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const statsCards = [
+                {
+                    title: 'Total Lists',
+                    value: '0', // Will be updated when lists load
+                    icon: 'fas fa-list',
+                    color: 'primary'
+                },
+                {
+                    title: 'Active Members',
+                    value: data.total_active_members,
+                    icon: 'fas fa-users',
+                    color: 'success'
+                },
+                {
+                    title: 'Monthly Collections',
+                    value: 'RWF ' + formatNumber(data.total_monthly_savings + data.total_social_funds),
+                    icon: 'fas fa-money-bill-wave',
+                    color: 'warning'
+                },
+                {
+                    title: 'Pending Repayments',
+                    value: 'RWF ' + formatNumber(data.pending_loan_repayments),
+                    icon: 'fas fa-credit-card',
+                    color: 'danger'
+                }
+            ];
+            
+            statsGrid.innerHTML = statsCards.map(card => `
+                <div class="stat-card ${card.color}">
+                    <div class="stat-icon">
+                        <i class="${card.icon}"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">${card.value}</div>
+                        <div class="stat-label">${card.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load salary deduction lists
+        async function loadLists() {
+            try {
+                const response = await apiCall('/treasurer/salary-deductions/lists');
+                const safeListsArray = Array.isArray(response) ? response : [];
+                displayLists(safeListsArray);
+                
+                // Update total lists count in stats
+                const statsCards = document.querySelectorAll('.stat-card');
+                if (statsCards[0]) {
+                    statsCards[0].querySelector('.stat-value').textContent = safeListsArray.length;
+                }
+            } catch (error) {
+                showError('Error loading lists: ' + error.message);
+            }
+        }
+        
+        // Display lists in table
+        function displayLists(lists) {
+            const tbody = document.getElementById('listsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const tableContainer = document.querySelector('.table-container');
+            
+            if (!lists || !Array.isArray(lists) || lists.length === 0) {
+                tbody.innerHTML = '';
+                tableContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            tableContainer.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = lists.map(list => {
+                console.log(`List ${list.id} status: ${list.status}`); // Debug log
+                
+                return `
+                <tr>
+                    <td><strong>${list.month_year}</strong></td>
+                    <td>${getStatusBadge(list.status)}</td>
+                    <td>${list.total_members}</td>
+                    <td><strong>RWF ${formatNumber(list.total_amount)}</strong></td>
+                    <td>${formatDate(list.created_at)}</td>
+                    <td>${list.generated_by}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="viewListDetails(${list.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${list.status !== 'processed' ? `
+                                <button class="btn btn-sm btn-info" onclick="downloadList(${list.id})" title="Download CSV">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            ` : ''}
+                            ${list.status === 'sent_to_hr' ? `
+                                <button class="btn btn-sm btn-warning" onclick="showUploadModal(${list.id})" title="Upload Processed">
+                                    <i class="fas fa-upload"></i>
+                                </button>
+                            ` : ''}
+                            ${list.status !== 'processed' ? `
+                                <button class="btn btn-sm btn-danger" onclick="showDeleteModal(${list.id}, '${list.month_year}')" title="Delete List">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+        
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            const statusMap = {
+                'generated': { class: 'warning', text: 'Generated' },
+                'sent_to_hr': { class: 'info', text: 'Sent to HR' },
+                'processed': { class: 'success', text: 'Processed' }
+            };
+            
+            const statusInfo = statusMap[status] || { class: 'secondary', text: status };
+            return `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+        }
+        
+        // Show generate modal
+        function showGenerateModal() {
+            document.getElementById('generateModal').style.display = 'block';
+        }
+        
+        // Close generate modal
+        function closeGenerateModal() {
+            document.getElementById('generateModal').style.display = 'none';
+        }
+        
+        // Generate list
+        async function generateList() {
+            const monthYear = document.getElementById('modalMonthInput').value;
+            if (!monthYear) {
+                showError('Please select a month');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/treasurer/salary-deductions/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({ month_year: monthYear })
+                });
+                
+                showSuccess(`Successfully generated list for ${monthYear}. Total Members: ${response.total_members}, Total Amount: RWF ${formatNumber(response.total_amount)}`);
+                closeGenerateModal();
+                loadStatsAndLists();
+            } catch (error) {
+                showError('Error generating list: ' + error.message);
+            }
+        }
+        
+        // Show delete modal
+        function showDeleteModal(listId, monthYear) {
+            currentDeleteListId = listId;
+            currentDeleteMonthYear = monthYear;
+            
+            document.getElementById('deleteMonthYear').textContent = monthYear;
+            document.getElementById('deletePasswordInput').value = '';
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+        
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            currentDeleteListId = null;
+            currentDeleteMonthYear = null;
+            document.getElementById('deletePasswordInput').value = '';
+        }
+        
+        // Toggle password visibility in delete modal
+        function toggleDeletePassword() {
+            const passwordInput = document.getElementById('deletePasswordInput');
+            const toggleIcon = document.getElementById('deletePasswordToggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+        
+        // Confirm delete with password
+        async function confirmDelete() {
+            const password = document.getElementById('deletePasswordInput').value;
+            
+            if (!password) {
+                showError('Please enter your password to confirm deletion');
+                return;
+            }
+            
+            if (!currentDeleteListId) {
+                showError('No list selected for deletion');
+                return;
+            }
+            
+            try {
+                const confirmBtn = document.getElementById('confirmDeleteBtn');
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                
+                const response = await apiCall(`/treasurer/salary-deductions/${currentDeleteListId}`, {
+                    method: 'DELETE',
+                    body: JSON.stringify({ password: password })
+                });
+                
+                showSuccess(`Successfully deleted salary deduction list for ${currentDeleteMonthYear}`);
+                closeDeleteModal();
+                loadStatsAndLists();
+            } catch (error) {
+                showError('Error deleting list: ' + error.message);
+            } finally {
+                const confirmBtn = document.getElementById('confirmDeleteBtn');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-trash"></i> Delete List';
+            }
+        }
+        
+        // Download list CSV
+        async function downloadList(listId) {
+            try {
+                const response = await fetch(`/api/treasurer/salary-deductions/${listId}/download`, {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) throw new Error('Failed to download file');
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `salary_deductions_${listId}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccess('CSV file downloaded successfully');
+                loadStatsAndLists();
+            } catch (error) {
+                showError('Error downloading file: ' + error.message);
+            }
+        }
+        
+        // View list details
+        async function viewListDetails(listId) {
+            // Show the details modal
+            document.getElementById('detailsModal').style.display = 'block';
+            document.getElementById('detailsLoading').style.display = 'block';
+            document.getElementById('detailsContent').style.display = 'none';
+            document.getElementById('detailsError').style.display = 'none';
+            
+            try {
+                // Use the existing API endpoint that returns list details
+                const response = await apiCall(`/treasurer/salary-deductions/${listId}`);
+                
+                if (response && response.items) {
+                    displayListDetails(response, listId);
+                } else {
+                    throw new Error('No data received');
+                }
+            } catch (error) {
+                console.error('Error loading list details:', error);
+                document.getElementById('detailsLoading').style.display = 'none';
+                document.getElementById('detailsError').style.display = 'block';
+            }
+        }
+        
+        // Display list details in modal
+        function displayListDetails(data, listId) {
+            document.getElementById('detailsLoading').style.display = 'none';
+            document.getElementById('detailsContent').style.display = 'block';
+            document.getElementById('exportDetailsBtn').style.display = 'inline-flex';
+            
+            // Update modal title
+            document.getElementById('detailsModalTitle').textContent = `Salary Deduction Details - ${data.month_year || 'List #' + listId}`;
+            
+            // Update summary cards
+            const totalMembers = data.total_members || 0;
+            const totalAmount = data.total_amount || 0;
+            const avgAmount = totalMembers > 0 ? totalAmount / totalMembers : 0;
+            
+            document.getElementById('detailsTotalMembers').textContent = totalMembers;
+            document.getElementById('detailsTotalAmount').textContent = 'RWF ' + formatNumber(totalAmount);
+            document.getElementById('detailsAvgAmount').textContent = 'RWF ' + formatNumber(avgAmount);
+            
+            // Populate the table with items data
+            const tbody = document.getElementById('detailsTableBody');
+            if (data.items && data.items.length > 0) {
+                tbody.innerHTML = data.items.map(item => `
+                    <tr>
+                        <td><span class="account-badge">${item.account_number}</span></td>
+                        <td><strong>${item.member_name}</strong></td>
+                        <td class="amount-cell positive">RWF ${formatNumber(item.monthly_commitment)}</td>
+                        <td class="amount-cell positive">RWF ${formatNumber(item.social_contribution)}</td>
+                        <td class="amount-cell ${item.loan_repayment > 0 ? 'negative' : 'neutral'}">RWF ${formatNumber(item.loan_repayment)}</td>
+                        <td class="amount-cell total-deduction">RWF ${formatNumber(item.total_deduction)}</td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #666;">No member data available</td></tr>';
+            }
+            
+            // Store data for export
+            window.currentDetailsData = data;
+        }
+        
+        // Close details modal
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+            window.currentDetailsData = null;
+        }
+        
+        // Export details to CSV
+        function exportDetailsToCSV() {
+            if (!window.currentDetailsData || !window.currentDetailsData.items) {
+                showError('No data to export');
+                return;
+            }
+            
+            const data = window.currentDetailsData;
+            const headers = ['Account Number', 'Member Name', 'Monthly Savings', 'Social Contribution', 'Loan Payment', 'Total Deduction'];
+            
+            const csvContent = [
+                headers.join(','),
+                ...data.items.map(item => [
+                    item.account_number,
+                    `"${item.member_name}"`,
+                    item.monthly_commitment,
+                    item.social_contribution,
+                    item.loan_repayment,
+                    item.total_deduction
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `salary_deduction_details_${data.month_year || 'list'}_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showSuccess('Details exported successfully');
+        }
+        
+        // Show upload modal
+        function showUploadModal(listId) {
+            currentUploadListId = listId;
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+        
+        // Close upload modal
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            resetUploadModal();
+        }
+        
+        // Handle file selection
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+                    showError('Please select a CSV file');
+                    return;
+                }
+                
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('selectedFile').style.display = 'block';
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+        
+        // Upload processed file
+        async function uploadProcessedFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file || !currentUploadListId) {
+                showError('Please select a file and try again');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const uploadBtn = document.getElementById('uploadBtn');
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                
+                const response = await fetch(`/api/treasurer/salary-deductions/${currentUploadListId}/upload-processed`, {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess(`File processed successfully! Processed: ${data.processed_count} members, Errors: ${data.error_count}`);
+                    closeUploadModal();
+                    loadStatsAndLists();
+                } else {
+                    showError('Error processing file: ' + data.error);
+                }
+            } catch (error) {
+                showError('Error uploading file: ' + error.message);
+            } finally {
+                const uploadBtn = document.getElementById('uploadBtn');
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Processed File';
+            }
+        }
+        
+        // Reset upload modal
+        function resetUploadModal() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('selectedFile').style.display = 'none';
+            document.getElementById('uploadBtn').disabled = true;
+            currentUploadListId = null;
+        }
+        
+        // Utility functions
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+        
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Drag and drop functionality
+        const fileUploadArea = document.querySelector('.file-upload-area');
+        
+        if (fileUploadArea) {
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+            
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('dragover');
+            });
+            
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('fileInput').files = files;
+                    handleFileSelect({ target: { files: files } });
+                }
+            });
+        }
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const generateModal = document.getElementById('generateModal');
+            const uploadModal = document.getElementById('uploadModal');
+            const detailsModal = document.getElementById('detailsModal');
+            const deleteModal = document.getElementById('deleteModal');
+            
+            if (event.target === generateModal) {
+                closeGenerateModal();
+            }
+            if (event.target === uploadModal) {
+                closeUploadModal();
+            }
+            if (event.target === detailsModal) {
+                closeDetailsModal();
+            }
+            if (event.target === deleteModal) {
+                closeDeleteModal();
+            }
+        }
+        
+        // Handle Enter key in delete password input
+        document.addEventListener('DOMContentLoaded', function() {
+            const deletePasswordInput = document.getElementById('deletePasswordInput');
+            if (deletePasswordInput) {
+                deletePasswordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        confirmDelete();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

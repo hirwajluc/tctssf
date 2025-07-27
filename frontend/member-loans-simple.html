@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Member Loans - Simple Test</title>
+</head>
+<body>
+    <h1>Member Loans Page</h1>
+    <p>This is a simple test version of the member loans page.</p>
+    <p>If you can see this, the routing works!</p>
+    
+    <script>
+        console.log('Simple member loans page loaded');
+        
+        // Test auth token
+        const authToken = localStorage.getItem('authToken');
+        console.log('Auth token found:', !!authToken);
+        
+        if (!authToken) {
+            document.body.innerHTML += '<p style="color: red;">No auth token found - redirecting to login</p>';
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 3000);
+        } else {
+            document.body.innerHTML += '<p style="color: green;">Auth token found - user is logged in</p>';
+        }
+    </script>
+</body>
+</html>
