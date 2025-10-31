@@ -1,0 +1,37 @@
+# Environment variables
+.env
+
+# Binary files
+tctssf
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# TLS certificates
+certs/*.key
+certs/*.crt
+certs/*.pem

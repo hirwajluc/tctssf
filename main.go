@@ -5,20 +5,44 @@ import (
 	"strings"
 	"tctssf/config"
 	"tctssf/controllers"
-	//"tctssf/middleware"
 	"tctssf/routes"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
+// @title TCTSSF API
+// @version 1.0
+// @description Teachers' Cooperative Savings and Social Fund Management System API
+// @contact.name API Support
+// @contact.email support@tctssf.rw
+// @license.name MIT
+// @host localhost:3000
+// @BasePath /api
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 func main() {
+	// Load configuration
+	cfg := config.LoadConfig()
+
+	// Initialize structured logger
+	config.InitLogger(cfg.Environment)
+	defer config.CloseLogger()
+
 	// Initialize database
 	config.InitDB()
 	defer config.CloseDB()
-	
+
+	// Initialize Redis (optional - will fall back to in-memory if unavailable)
+	config.InitRedis(cfg.RedisURL)
+	defer config.CloseRedis()
+
 	app := fiber.New(fiber.Config{
 		Prefork: false, // Set to true in production for better performance
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
@@ -31,15 +55,30 @@ func main() {
 			})
 		},
 	})
-	
+
 	// Middleware
-	app.Use(logger.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${status} - ${method} ${path} (${latency})\n",
+	}))
 	app.Use(recover.New())
+
+	// CORS with configurable origins
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization, User-ID, User-Role",
+		AllowOrigins:  cfg.AllowedOrigins,
+		AllowMethods:  "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders:  "Origin, Content-Type, Accept, Authorization, User-ID, User-Role",
 		ExposeHeaders: "Authorization",
+	}))
+
+	// Rate limiting
+	app.Use(limiter.New(limiter.Config{
+		Max:        100, // 100 requests
+		Expiration: 60,  // per minute
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(429).JSON(fiber.Map{
+				"error": "Too many requests, please try again later",
+			})
+		},
 	}))
 	
 	// Add cache control for static files
@@ -62,12 +101,39 @@ func main() {
 	
 	// Setup routes
 	routes.SetupRoutes(app, authController, userController, adminController, loanController, treasurerController)
-	
-	log.Println("Server starting on port 3000...")
-	log.Println("Frontend will be served from ./frontend directory")
-	log.Println("Make sure your frontend files are placed in the ./frontend directory")
-	log.Printf("Default Superadmin: superadmin@tctssf.rw / admin123")
-	log.Printf("Default Admin: admin@tctssf.rw / admin123")
-	log.Printf("Default Treasurer: treasurer@tctssf.rw / treasurer123")
-	log.Fatal(app.Listen(":3000"))
+
+	// Swagger documentation
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
+
+	// Server info
+	serverAddr := ":" + cfg.ServerPort
+	log.Printf("===========================================")
+	log.Printf("TCTSSF Server Starting")
+	log.Printf("===========================================")
+	log.Printf("Environment: %s", cfg.Environment)
+	log.Printf("Server: http://%s:%s", cfg.ServerHost, cfg.ServerPort)
+	log.Printf("Database: %s@%s:%s/%s", cfg.DBUser, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	if config.RedisClient != nil {
+		log.Printf("Redis: Connected ✓")
+	} else {
+		log.Printf("Redis: Not connected (using in-memory sessions)")
+	}
+	log.Printf("CORS Origins: %s", cfg.AllowedOrigins)
+	log.Printf("Rate Limiting: 100 requests/minute")
+	log.Printf("Frontend: ./frontend directory")
+	log.Printf("-------------------------------------------")
+	log.Printf("Default Credentials:")
+	log.Printf("  Superadmin: superadmin@tctssf.rw / admin123")
+	log.Printf("  Admin: admin@tctssf.rw / admin123")
+	log.Printf("  Treasurer: treasurer@tctssf.rw / treasurer123")
+	log.Printf("===========================================")
+
+	// Start server with optional TLS
+	if cfg.EnableTLS {
+		log.Printf("Starting HTTPS server on %s", serverAddr)
+		log.Fatal(app.ListenTLS(serverAddr, cfg.TLSCertFile, cfg.TLSKeyFile))
+	} else {
+		log.Printf("Starting HTTP server on %s", serverAddr)
+		log.Fatal(app.Listen(serverAddr))
+	}
 }

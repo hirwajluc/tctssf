@@ -72,13 +72,10 @@ func (ac *AuthController) Login(c *fiber.Ctx) error {
 	
 	// Generate session token
 	token := ac.generateSessionToken()
-	
-	// Store session
-	middleware.Sessions[token] = models.SessionData{
-		UserID: user.ID,
-		Role:   user.Role,
-	}
-	
+
+	// Store session (Redis with in-memory fallback)
+	middleware.StoreSession(token, user.ID, user.Role)
+
 	return c.JSON(models.LoginResponse{
 		User:  user,
 		Token: token,

@@ -15,11 +15,17 @@ var DB *sql.DB
 // InitDB initializes the database connection
 func InitDB() {
 	var err error
-	
+
+	// Load configuration
+	if AppConfig == nil {
+		LoadConfig()
+	}
+
 	log.Println("Attempting to connect to database...")
-	
-	// Connect to the existing database
-	DB, err = sql.Open("mysql", "root:@tcp(localhost:3306)/tctssf?parseTime=true")
+	log.Printf("Database: %s@%s:%s/%s", AppConfig.DBUser, AppConfig.DBHost, AppConfig.DBPort, AppConfig.DBName)
+
+	// Connect to the existing database using configuration
+	DB, err = sql.Open("mysql", AppConfig.GetDBConnectionString())
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -30,13 +36,13 @@ func InitDB() {
 	}
 
 	log.Println("Connected to database successfully")
-	
+
 	log.Println("Creating tables...")
 	createTables()
-	
+
 	log.Println("Setting up default users...")
 	createDefaultUsers()
-	
+
 	log.Println("Database initialization complete")
 }
 
