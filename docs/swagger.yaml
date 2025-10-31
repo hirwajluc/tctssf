@@ -1,266 +1,88 @@
-openapi: 3.0.0
+basePath: /api
+definitions:
+  models.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  models.User:
+    properties:
+      account_number:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+    type: object
+host: localhost:3000
 info:
-  title: TCTSSF API
-  description: Teachers' Cooperative Savings and Social Fund Management System API
-  version: 1.0.0
   contact:
-    name: API Support
     email: support@tctssf.rw
-
-servers:
-  - url: http://localhost:3000/api
-    description: Development server
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      description: Session token obtained from login
-
-  schemas:
-    LoginRequest:
-      type: object
-      required:
-        - email
-        - password
-      properties:
-        email:
-          type: string
-          format: email
-          example: admin@tctssf.rw
-        password:
-          type: string
-          format: password
-          example: admin123
-
-    LoginResponse:
-      type: object
-      properties:
-        user:
-          $ref: '#/components/schemas/User'
-        token:
-          type: string
-          example: a1b2c3d4e5f6...
-
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-        account_number:
-          type: string
-          example: "1000001"
-        first_name:
-          type: string
-          example: John
-        last_name:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john@tctssf.rw
-        phone:
-          type: string
-          example: "0788123456"
-        role:
-          type: string
-          enum: [member, admin, superadmin, treasurer]
-          example: member
-        is_active:
-          type: boolean
-          example: true
-
-    LoanApplication:
-      type: object
-      required:
-        - amount
-        - repayment_period
-      properties:
-        amount:
-          type: number
-          format: float
-          minimum: 10000
-          example: 50000
-        repayment_period:
-          type: integer
-          minimum: 1
-          example: 12
-
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-          example: "Invalid credentials"
-
+    name: API Support
+  description: Teachers' Cooperative Savings and Social Fund Management System API
+  license:
+    name: MIT
+  title: TCTSSF API
+  version: "1.0"
 paths:
   /login:
     post:
-      summary: User login
+      consumes:
+      - application/json
       description: Authenticate user and receive session token
-      tags:
-        - Authentication
-      requestBody:
+      parameters:
+      - description: Login credentials
+        in: body
+        name: credentials
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
       responses:
-        '200':
-          description: Successful login
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /profile:
-    get:
-      summary: Get user profile
-      description: Retrieve authenticated user's profile information
-      tags:
-        - User
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: User profile
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /loans/apply:
-    post:
-      summary: Apply for a loan
-      description: Submit a loan application
-      tags:
-        - Loans
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoanApplication'
-      responses:
-        '200':
-          description: Loan application submitted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  amount:
-                    type: number
-                  repayment_period:
-                    type: integer
-                  monthly_payment:
-                    type: number
-        '400':
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "400":
           description: Invalid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /admin/loans/pending:
-    get:
-      summary: Get pending loans
-      description: Retrieve loans pending approval at current user's level
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
       tags:
-        - Loans (Admin)
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: List of pending loans
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-        '403':
-          description: Insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /admin/members:
-    get:
-      summary: Get all members
-      description: Retrieve list of all members (Admin only)
-      tags:
-        - Admin
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: List of members
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-        '403':
-          description: Insufficient permissions
-
-  /treasurer/dashboard:
-    get:
-      summary: Get treasurer dashboard
-      description: Retrieve treasurer dashboard statistics
-      tags:
-        - Treasurer
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Dashboard statistics
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total_active_members:
-                    type: integer
-                  total_monthly_savings:
-                    type: number
-                  total_social_funds:
-                    type: number
-        '403':
-          description: Insufficient permissions
-
-tags:
-  - name: Authentication
-    description: User authentication endpoints
-  - name: User
-    description: User management endpoints
-  - name: Loans
-    description: Loan management for members
-  - name: Loans (Admin)
-    description: Loan approval and management for administrators
-  - name: Admin
-    description: Administrative endpoints
-  - name: Treasurer
-    description: Treasurer-specific endpoints
+      - Authentication
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

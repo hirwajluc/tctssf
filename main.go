@@ -5,6 +5,7 @@ import (
 	"strings"
 	"tctssf/config"
 	"tctssf/controllers"
+	_ "tctssf/docs" // Import generated docs
 	"tctssf/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -92,18 +93,18 @@ func main() {
 		return c.Next()
 	})
 	
+	// Swagger documentation (MUST be before routes to avoid being caught by static handler)
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
+
 	// Initialize controllers
 	authController := controllers.NewAuthController()
 	userController := controllers.NewUserController()
 	adminController := controllers.NewAdminController()
 	loanController := controllers.NewLoanController()
 	treasurerController := controllers.NewTreasurerController()
-	
+
 	// Setup routes
 	routes.SetupRoutes(app, authController, userController, adminController, loanController, treasurerController)
-
-	// Swagger documentation
-	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
 	// Server info
 	serverAddr := ":" + cfg.ServerPort

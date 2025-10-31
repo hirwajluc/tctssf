@@ -119,15 +119,21 @@ func SetupRoutes(
 // serveStaticFiles handles static file serving with SPA support
 func serveStaticFiles(c *fiber.Ctx) error {
 	path := c.Path()
-	
+
 	log.Printf("Static file request for path: %s", path)
-	
+
+	// Skip Swagger routes - they should be handled by Swagger middleware
+	if strings.HasPrefix(path, "/swagger") {
+		log.Printf("Swagger route detected, passing to Swagger handler: %s", path)
+		return c.Next()
+	}
+
 	// Handle root path
 	if path == "/" {
 		log.Printf("Serving index.html for root path")
 		return c.SendFile("./frontend/index.html")
 	}
-	
+
 	// Check if it's an API call
 	if strings.HasPrefix(path, "/api/") {
 		log.Printf("API call detected, passing to next handler: %s", path)

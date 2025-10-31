@@ -25,6 +25,16 @@ func NewAuthController() *AuthController {
 }
 
 // Login handles user authentication
+// @Summary User login
+// @Description Authenticate user and receive session token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param credentials body models.LoginRequest true "Login credentials"
+// @Success 200 {object} models.LoginResponse "Login successful"
+// @Failure 401 {object} map[string]string "Invalid credentials"
+// @Failure 400 {object} map[string]string "Invalid request"
+// @Router /login [post]
 func (ac *AuthController) Login(c *fiber.Ctx) error {
 	var req models.LoginRequest
 	if err := c.BodyParser(&req); err != nil {

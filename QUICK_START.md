@@ -78,13 +78,24 @@ Or run directly:
 go run main.go
 ```
 
-### 4. Access the Application
+### 4. Generate Swagger Documentation (First Time Only)
+
+```bash
+# Install swag CLI (if not already installed)
+go install github.com/swaggo/swag/cmd/swag@latest
+export PATH=$PATH:$(go env GOPATH)/bin
+
+# Generate Swagger docs
+swag init
+```
+
+### 5. Access the Application
 
 - **Frontend**: http://localhost:3000
 - **API Docs**: http://localhost:3000/swagger/index.html
 - **API Base**: http://localhost:3000/api
 
-### 5. Default Credentials
+### 6. Default Credentials
 
 ```
 Superadmin:
