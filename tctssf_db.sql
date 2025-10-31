@@ -265,16 +265,16 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `account_number`, `first_name`, `last_name`, `email`, `phone`, `password_hash`, `role`, `is_active`, `created_at`, `specific_role`) VALUES
-(1, '10000000', 'Super', 'Admin', 'superadmin@tctssf.rw', NULL, '$2a$10$JvQUBnR6JTKCp/c089QIB.F/007dIowOtHsnsCZQ51bxDjfHQiQyK', 'superadmin', 1, '2025-06-27 11:20:18', 'super_admin'),
-(2, '10000002', 'Default', 'Admin', 'admin@tctssf.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-06-27 11:20:18', 'general_admin'),
-(3, '10000001', 'Default', 'Treasurer', 'treasurer@tctssf.rw', NULL, '$2a$10$ZviL6pvBQHIrWBD9wDq7HeBibsuZX7v9QO/bNlL7WWtih5MhRoRTO', 'treasurer', 1, '2025-06-27 11:20:18', 'treasurer'),
-(4, '10021881', 'Mugisha', 'Emmanuel', 'mugisha@tctssf.rw', '0788212121', '$2a$10$K62ggYLDQK4R2ZvdvpYQxed.QPMNXPtMnX/xA3tc5utcRFPpIWi.S', 'member', 1, '2025-06-26 12:25:00', NULL),
-(5, '10015566', 'Mukiza', 'Innocent', 'mukiza@tctssf.rw', '0788707070', '$2a$10$q8vk16aIT6iyzHRf9BKDfuQ8hN2H7ofimGcYhUXwCC4mb.4aBw..q', 'member', 1, '2025-06-26 12:25:54', NULL),
-(6, '10051347', 'IRADUKUNDA', 'Henriette Marie', 'henriette@tctssf.rw', '0788123456', '$2a$10$r2Rff66tAluwl/BNcrIhkeA1qtMHsI3DWq.iCNTd1KEOz20Wn6bH6', 'member', 1, '2025-06-27 06:37:45', NULL),
-(7, '10040901', 'MANZI', 'Ivan Bright', 'bright@tctssf.rw', '0788654321', '$2a$10$oCPMVA6iqqJ0rg.wXlGTzeJE3Y8iczI2s1xbOeKUqAKhEyBmXKY2i', 'member', 1, '2025-06-27 06:37:45', NULL),
-(8, '10000003', 'Vice', 'President', 'vicepresident@tctssf.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-07-03 11:57:28', 'vice_president'),
-(9, '10000004', 'President', 'TCTSSF', 'president@tctssf.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-07-03 11:57:28', 'president'),
-(10, '10059611', 'Niyonshuti', 'Yves', 'yves@tctssf.rw', '0788882288', '$2a$10$mRspNcBlaogEIp9jhfC.auDVy0.yg8eXp75jhwq/sWu99dsL/Nr1K', 'member', 1, '2025-07-10 14:18:52', NULL);
+(1, '10000000', 'Super', 'Admin', 'superadmin@rdbsls.rw', NULL, '$2a$10$JvQUBnR6JTKCp/c089QIB.F/007dIowOtHsnsCZQ51bxDjfHQiQyK', 'superadmin', 1, '2025-06-27 11:20:18', 'super_admin'),
+(2, '10000002', 'Default', 'Admin', 'admin@rdbsls.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-06-27 11:20:18', 'general_admin'),
+(3, '10000001', 'Default', 'Treasurer', 'treasurer@rdbsls.rw', NULL, '$2a$10$ZviL6pvBQHIrWBD9wDq7HeBibsuZX7v9QO/bNlL7WWtih5MhRoRTO', 'treasurer', 1, '2025-06-27 11:20:18', 'treasurer'),
+(4, '10021881', 'Mugisha', 'Emmanuel', 'mugisha@rdbsls.rw', '0788212121', '$2a$10$K62ggYLDQK4R2ZvdvpYQxed.QPMNXPtMnX/xA3tc5utcRFPpIWi.S', 'member', 1, '2025-06-26 12:25:00', NULL),
+(5, '10015566', 'Mukiza', 'Innocent', 'mukiza@rdbsls.rw', '0788707070', '$2a$10$q8vk16aIT6iyzHRf9BKDfuQ8hN2H7ofimGcYhUXwCC4mb.4aBw..q', 'member', 1, '2025-06-26 12:25:54', NULL),
+(6, '10051347', 'IRADUKUNDA', 'Henriette Marie', 'henriette@rdbsls.rw', '0788123456', '$2a$10$r2Rff66tAluwl/BNcrIhkeA1qtMHsI3DWq.iCNTd1KEOz20Wn6bH6', 'member', 1, '2025-06-27 06:37:45', NULL),
+(7, '10040901', 'MANZI', 'Ivan Bright', 'bright@rdbsls.rw', '0788654321', '$2a$10$oCPMVA6iqqJ0rg.wXlGTzeJE3Y8iczI2s1xbOeKUqAKhEyBmXKY2i', 'member', 1, '2025-06-27 06:37:45', NULL),
+(8, '10000003', 'Vice', 'President', 'vicepresident@rdbsls.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-07-03 11:57:28', 'vice_president'),
+(9, '10000004', 'President', 'RDB SLS', 'president@rdbsls.rw', NULL, '$2a$10$8t9l7Q79sMw6BnlauIXgfuHxIfpn7qDWDsJz7UEAGUCq1fxPhl91C', 'admin', 1, '2025-07-03 11:57:28', 'president'),
+(10, '10059611', 'Niyonshuti', 'Yves', 'yves@rdbsls.rw', '0788882288', '$2a$10$mRspNcBlaogEIp9jhfC.auDVy0.yg8eXp75jhwq/sWu99dsL/Nr1K', 'member', 1, '2025-07-10 14:18:52', NULL);
 
 -- --------------------------------------------------------
 

@@ -165,7 +165,7 @@ http://localhost:3000/swagger/doc.json
 1. Open: `http://86.48.7.218:3000/swagger/index.html`
 
 2. Should see:
-   - **Title**: "TCTSSF API"
+   - **Title**: "RDB SLS API"
    - **Version**: "1.0"
    - **One endpoint section**: "Authentication"
    - **POST /api/login** expandable
@@ -183,7 +183,7 @@ http://localhost:3000/swagger/doc.json
 3. Paste:
    ```json
    {
-     "email": "admin@tctssf.rw",
+     "email": "admin@rdbsls.rw",
      "password": "admin123"
    }
    ```

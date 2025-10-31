@@ -110,14 +110,32 @@
                         <label for="userRole">User Role *</label>
                         <div class="input-wrapper select-wrapper">
                             <i class="fas fa-shield-alt"></i>
-                            <select id="userRole" name="role" required onchange="toggleCommitmentField()">
+                            <select id="userRole" name="role" required onchange="toggleCommitmentField(); toggleCreateSpecificRoleField();">
                                 <option value="">Select user role</option>
                                 <option value="member">Member</option>
                                 <option value="admin">Admin</option>
                                 <option value="superadmin">Super Admin</option>
+                                <option value="treasurer">Treasurer</option>
                             </select>
                         </div>
                     </div>
+                    <div class="form-group" id="specificRoleCreateGroup" style="display: none;">
+                        <label for="specificRole">Specific Role</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i class="fas fa-user-tie"></i>
+                            <select id="specificRole" name="specific_role">
+                                <option value="">None (General Admin)</option>
+                                <option value="vice_president">Vice President</option>
+                                <option value="president">President</option>
+                            </select>
+                        </div>
+                        <small style="color: #718096; font-size: 12px; margin-top: 4px; display: block;">
+                            Assign specific approval authority for loan workflow
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group" id="commitmentGroup" style="display: none;">
                         <label for="monthlyCommitment">Monthly Savings Commitment (RWF) *</label>
                         <div class="input-wrapper">
@@ -286,7 +304,7 @@
             const roleSelect = document.getElementById('userRole');
             const commitmentGroup = document.getElementById('commitmentGroup');
             const commitmentInput = document.getElementById('monthlyCommitment');
-            
+
             if (roleSelect.value === 'member') {
                 commitmentGroup.style.display = 'block';
                 commitmentInput.required = true;
@@ -296,7 +314,21 @@
                 commitmentInput.value = '';
             }
         }
-        
+
+        function toggleCreateSpecificRoleField() {
+            const roleSelect = document.getElementById('userRole');
+            const specificRoleGroup = document.getElementById('specificRoleCreateGroup');
+            const specificRoleSelect = document.getElementById('specificRole');
+
+            // Show specific_role field only for admin role
+            if (roleSelect.value === 'admin') {
+                specificRoleGroup.style.display = 'block';
+            } else {
+                specificRoleGroup.style.display = 'none';
+                specificRoleSelect.value = '';
+            }
+        }
+
         async function loadMemberStats() {
             try {
                 const data = await apiCall('/admin/reports');
@@ -346,6 +378,14 @@
                 role: formData.get('role'),
                 joined_date: formData.get('joined_date')
             };
+
+            // Add specific_role for admins
+            if (memberData.role === 'admin') {
+                const specificRole = formData.get('specific_role');
+                if (specificRole) {
+                    memberData.specific_role = specificRole;
+                }
+            }
 
             // Add monthly commitment for members
             if (memberData.role === 'member') {

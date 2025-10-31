@@ -1,4 +1,4 @@
-# TCTSSF Quick Start Guide
+# RDB SLS Quick Start Guide
 
 ## Improvements Implemented ✅
 
@@ -99,15 +99,15 @@ swag init
 
 ```
 Superadmin:
-  Email: superadmin@tctssf.rw
+  Email: superadmin@rdbsls.rw
   Password: admin123
 
 Admin:
-  Email: admin@tctssf.rw
+  Email: admin@rdbsls.rw
   Password: admin123
 
 Treasurer:
-  Email: treasurer@tctssf.rw
+  Email: treasurer@rdbsls.rw
   Password: treasurer123
 ```
 
@@ -177,7 +177,7 @@ ALLOWED_ORIGINS=https://yourdomain.com
 Create systemd service `/etc/systemd/system/tctssf.service`:
 ```ini
 [Unit]
-Description=TCTSSF Server
+Description=RDB SLS Server
 After=network.target mysql.service redis.service
 
 [Service]

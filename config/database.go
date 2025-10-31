@@ -167,11 +167,11 @@ func createDefaultSuperAdmin() {
 		_, err := DB.Exec(`
 			INSERT INTO users (account_number, first_name, last_name, email, password_hash, role) 
 			VALUES (?, ?, ?, ?, ?, ?)`,
-			"1000000", "Super", "Admin", "superadmin@tctssf.rw", string(hashedPassword), "superadmin")
+			"1000000", "Super", "Admin", "superadmin@rdbsls.rw", string(hashedPassword), "superadmin")
 		if err != nil {
 			log.Printf("Failed to create default superadmin: %v", err)
 		} else {
-			log.Println("Default superadmin created: superadmin@tctssf.rw / admin123")
+			log.Println("Default superadmin created: superadmin@rdbsls.rw / admin123")
 		}
 	}
 }
@@ -185,11 +185,11 @@ func createDefaultAdmin() {
 		_, err := DB.Exec(`
 			INSERT INTO users (account_number, first_name, last_name, email, password_hash, role) 
 			VALUES (?, ?, ?, ?, ?, ?)`,
-			"1000002", "Default", "Admin", "admin@tctssf.rw", string(hashedPassword), "admin")
+			"1000002", "Default", "Admin", "admin@rdbsls.rw", string(hashedPassword), "admin")
 		if err != nil {
 			log.Printf("Failed to create default admin: %v", err)
 		} else {
-			log.Println("Default admin created: admin@tctssf.rw / admin123")
+			log.Println("Default admin created: admin@rdbsls.rw / admin123")
 		}
 	}
 }
@@ -203,11 +203,11 @@ func createDefaultTreasurer() {
 		_, err := DB.Exec(`
 			INSERT INTO users (account_number, first_name, last_name, email, password_hash, role) 
 			VALUES (?, ?, ?, ?, ?, ?)`,
-			"1000001", "Default", "Treasurer", "treasurer@tctssf.rw", string(hashedPassword), "treasurer")
+			"1000001", "Default", "Treasurer", "treasurer@rdbsls.rw", string(hashedPassword), "treasurer")
 		if err != nil {
 			log.Printf("Failed to create default treasurer: %v", err)
 		} else {
-			log.Println("Default treasurer created: treasurer@tctssf.rw / treasurer123")
+			log.Println("Default treasurer created: treasurer@rdbsls.rw / treasurer123")
 		}
 	}
 }

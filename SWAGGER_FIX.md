@@ -86,7 +86,7 @@ http://localhost:3000/swagger/index.html
 4. Enter test credentials:
    ```json
    {
-     "email": "admin@tctssf.rw",
+     "email": "admin@rdbsls.rw",
      "password": "admin123"
    }
    ```

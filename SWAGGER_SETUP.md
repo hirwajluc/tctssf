@@ -2,7 +2,7 @@
 
 ## ✅ Swagger is Now Configured!
 
-The Swagger/OpenAPI documentation has been successfully set up for the TCTSSF API.
+The Swagger/OpenAPI documentation has been successfully set up for the RDB SLS API.
 
 ## Accessing Swagger UI
 
@@ -137,7 +137,7 @@ Navigate to `http://localhost:3000/swagger/index.html`
 3. Enter credentials:
    ```json
    {
-     "email": "admin@tctssf.rw",
+     "email": "admin@rdbsls.rw",
      "password": "admin123"
    }
    ```

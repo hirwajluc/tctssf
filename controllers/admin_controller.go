@@ -167,9 +167,9 @@ func (ac *AdminController) CreateUser(c *fiber.Ctx) error {
 	defer tx.Rollback()
 	
 	result, err := tx.Exec(`
-		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role, joined_date)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword), req.Role, req.JoinedDate)
+		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role, specific_role, joined_date)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword), req.Role, req.SpecificRole, req.JoinedDate)
 	
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Failed to create user"})
@@ -198,20 +198,26 @@ func (ac *AdminController) GetUserByID(c *fiber.Ctx) error {
 	
 	var user models.User
 	var phone sql.NullString
-	
+	var specificRole sql.NullString
+
 	err := ac.db.QueryRow(`
-		SELECT id, account_number, first_name, last_name, email, phone, role, created_at, is_active 
+		SELECT id, account_number, first_name, last_name, email, phone, role, specific_role, created_at, is_active
 		FROM users WHERE id = ?`, userID).Scan(
 		&user.ID, &user.AccountNumber, &user.FirstName, &user.LastName,
-		&user.Email, &phone, &user.Role, &user.CreatedAt, &user.IsActive)
-	
+		&user.Email, &phone, &user.Role, &specificRole, &user.CreatedAt, &user.IsActive)
+
 	// Convert NullString to regular string
 	if phone.Valid {
 		user.Phone = phone.String
 	} else {
 		user.Phone = ""
 	}
-	
+
+	// Convert NullString to pointer for specific_role
+	if specificRole.Valid {
+		user.SpecificRole = &specificRole.String
+	}
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
@@ -253,10 +259,10 @@ func (ac *AdminController) UpdateUser(c *fiber.Ctx) error {
 	}
 	
 	_, err = ac.db.Exec(`
-		UPDATE users 
-		SET first_name = ?, last_name = ?, email = ?, phone = ?, role = ?, is_active = ?
+		UPDATE users
+		SET first_name = ?, last_name = ?, email = ?, phone = ?, role = ?, specific_role = ?, is_active = ?
 		WHERE id = ?`,
-		req.FirstName, req.LastName, req.Email, req.Phone, req.Role, req.IsActive, userID)
+		req.FirstName, req.LastName, req.Email, req.Phone, req.Role, req.SpecificRole, req.IsActive, userID)
 	
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update user"})

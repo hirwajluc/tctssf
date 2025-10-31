@@ -1,6 +1,6 @@
-# TCTSSF - Teachers' Cooperative Savings and Social Fund
+# RDB SLS - RDB Staff Loan System
 
-A comprehensive savings and loan management system for teachers' cooperatives, built with Go and Fiber framework.
+A comprehensive savings and loan management system built with Go and Fiber framework.
 
 ## 🎉 Status: Production Ready!
 
@@ -68,9 +68,9 @@ go build -o tctssf main.go
 ### Default Credentials
 
 ```
-Superadmin: superadmin@tctssf.rw / admin123
-Admin:      admin@tctssf.rw      / admin123
-Treasurer:  treasurer@tctssf.rw  / treasurer123
+Superadmin: superadmin@rdbsls.rw / admin123
+Admin:      admin@rdbsls.rw      / admin123
+Treasurer:  treasurer@rdbsls.rw  / treasurer123
 ```
 
 **⚠️ Change these in production!**

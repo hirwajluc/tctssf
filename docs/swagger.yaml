@@ -28,6 +28,8 @@ definitions:
         type: integer
       is_active:
         type: boolean
+      joined_date:
+        type: string
       last_name:
         type: string
       phone:
@@ -38,12 +40,12 @@ definitions:
 host: localhost:3000
 info:
   contact:
-    email: support@tctssf.rw
+    email: support@rdbsls.rw
     name: API Support
-  description: Teachers' Cooperative Savings and Social Fund Management System API
+  description: RDB Staff Loan System - Savings and Loan Management System API
   license:
     name: MIT
-  title: TCTSSF API
+  title: RDB SLS API
   version: "1.0"
 paths:
   /login:

@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "email": "support@tctssf.rw"
+            "email": "support@rdbsls.rw"
         },
         "license": {
             "name": "MIT"
@@ -118,6 +118,9 @@ const docTemplate = `{
                 "is_active": {
                     "type": "boolean"
                 },
+                "joined_date": {
+                    "type": "string"
+                },
                 "last_name": {
                     "type": "string"
                 },
@@ -145,8 +148,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:3000",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "TCTSSF API",
-	Description:      "Teachers' Cooperative Savings and Social Fund Management System API",
+	Title:            "RDB SLS API",
+	Description:      "RDB Staff Loan System - Savings and Loan Management System API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

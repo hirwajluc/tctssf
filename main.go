@@ -16,11 +16,11 @@ import (
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
-// @title TCTSSF API
+// @title RDB SLS API
 // @version 1.0
-// @description Teachers' Cooperative Savings and Social Fund Management System API
+// @description RDB Staff Loan System - Savings and Loan Management System API
 // @contact.name API Support
-// @contact.email support@tctssf.rw
+// @contact.email support@rdbsls.rw
 // @license.name MIT
 // @host localhost:3000
 // @BasePath /api
@@ -109,7 +109,7 @@ func main() {
 	// Server info
 	serverAddr := ":" + cfg.ServerPort
 	log.Printf("===========================================")
-	log.Printf("TCTSSF Server Starting")
+	log.Printf("RDB SLS Server Starting")
 	log.Printf("===========================================")
 	log.Printf("Environment: %s", cfg.Environment)
 	log.Printf("Server: http://%s:%s", cfg.ServerHost, cfg.ServerPort)
@@ -124,9 +124,9 @@ func main() {
 	log.Printf("Frontend: ./frontend directory")
 	log.Printf("-------------------------------------------")
 	log.Printf("Default Credentials:")
-	log.Printf("  Superadmin: superadmin@tctssf.rw / admin123")
-	log.Printf("  Admin: admin@tctssf.rw / admin123")
-	log.Printf("  Treasurer: treasurer@tctssf.rw / treasurer123")
+	log.Printf("  Superadmin: superadmin@rdbsls.rw / admin123")
+	log.Printf("  Admin: admin@rdbsls.rw / admin123")
+	log.Printf("  Treasurer: treasurer@rdbsls.rw / treasurer123")
 	log.Printf("===========================================")
 
 	// Start server with optional TLS

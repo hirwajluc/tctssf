@@ -192,10 +192,27 @@
                         <label>Role</label>
                         <div class="input-wrapper select-wrapper">
                             <i class="fas fa-shield-alt"></i>
-                            <select id="editRole" required>
+                            <select id="editRole" required onchange="toggleSpecificRoleField()">
                                 <!-- Options will be populated by JavaScript -->
                             </select>
                         </div>
+                    </div>
+                </div>
+                <div class="form-row" id="specificRoleGroup" style="display: none;">
+                    <div class="form-group">
+                        <label>Specific Role</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i class="fas fa-user-tie"></i>
+                            <select id="editSpecificRole">
+                                <option value="">None (General Admin)</option>
+                                <option value="treasurer">Treasurer</option>
+                                <option value="vice_president">Vice President</option>
+                                <option value="president">President</option>
+                            </select>
+                        </div>
+                        <small style="color: #718096; font-size: 12px; margin-top: 4px; display: block;">
+                            Assign specific approval authority for the loan workflow
+                        </small>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -415,17 +432,25 @@
                         <option value="member" ${userData.role === 'member' ? 'selected' : ''}>Member</option>
                         <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
                         <option value="superadmin" ${userData.role === 'superadmin' ? 'selected' : ''}>Super Admin</option>
+                        <option value="treasurer" ${userData.role === 'treasurer' ? 'selected' : ''}>Treasurer</option>
                     `;
                 } else {
                     editRoleSelect.innerHTML = `
                         <option value="member" ${userData.role === 'member' ? 'selected' : ''}>Member</option>
                     `;
                 }
-                
+
                 if (currentUser.role === 'admin' && userData.role !== 'member') {
                     editRoleSelect.disabled = true;
                 }
-                
+
+                // Setup specific role
+                const specificRoleValue = userData.specific_role || '';
+                document.getElementById('editSpecificRole').value = specificRoleValue;
+
+                // Show/hide specific role field based on current role
+                toggleSpecificRoleField();
+
                 // Show modal
                 document.getElementById('editModal').classList.remove('hidden');
                 
@@ -434,6 +459,20 @@
             }
         }
         
+        function toggleSpecificRoleField() {
+            const role = document.getElementById('editRole').value;
+            const specificRoleGroup = document.getElementById('specificRoleGroup');
+            const currentUser = getCurrentUser();
+
+            // Only show specific_role field for admin role and only for superadmin users
+            if (role === 'admin' && currentUser.role === 'superadmin') {
+                specificRoleGroup.style.display = 'block';
+            } else {
+                specificRoleGroup.style.display = 'none';
+                document.getElementById('editSpecificRole').value = '';
+            }
+        }
+
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
             currentEditUserId = null;
@@ -456,7 +495,8 @@
                     email: document.getElementById('editEmail').value,
                     phone: document.getElementById('editPhone').value,
                     is_active: document.getElementById('editStatus').value === 'true',
-                    role: document.getElementById('editRole').value
+                    role: document.getElementById('editRole').value,
+                    specific_role: document.getElementById('editSpecificRole').value || null
                 };
                 
                 try {

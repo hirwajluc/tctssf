@@ -11,6 +11,7 @@ type User struct {
 	Email         string    `json:"email"`
 	Phone         string    `json:"phone"`
 	Role          string    `json:"role"`
+	SpecificRole  *string   `json:"specific_role,omitempty"`
 	CreatedAt     time.Time `json:"created_at"`
 	JoinedDate    *string   `json:"joined_date,omitempty"`
 	IsActive      bool      `json:"is_active"`
@@ -43,18 +44,20 @@ type CreateUserRequest struct {
 	Email             string  `json:"email"`
 	Phone             string  `json:"phone"`
 	Role              string  `json:"role"`
+	SpecificRole      string  `json:"specific_role,omitempty"`
 	MonthlyCommitment float64 `json:"monthly_commitment,omitempty"`
 	JoinedDate        string  `json:"joined_date,omitempty"`
 }
 
 // UpdateUserRequest for updating users
 type UpdateUserRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	Role      string `json:"role"`
-	IsActive  bool   `json:"is_active"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Email        string `json:"email"`
+	Phone        string `json:"phone"`
+	Role         string `json:"role"`
+	SpecificRole string `json:"specific_role,omitempty"`
+	IsActive     bool   `json:"is_active"`
 }
 
 // UpdateCommitmentRequest for updating monthly commitment

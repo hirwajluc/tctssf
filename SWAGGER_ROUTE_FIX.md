@@ -113,13 +113,13 @@ curl -I http://localhost:3000/api/login
    http://86.48.7.218:3000/swagger/index.html
    ```
 
-4. **Should see**: Swagger UI with TCTSSF API documentation
+4. **Should see**: Swagger UI with RDB SLS API documentation
 
 ## What You'll See
 
 ### Swagger UI Homepage
 
-- **Title**: TCTSSF API
+- **Title**: RDB SLS API
 - **Version**: 1.0
 - **Description**: Teachers' Cooperative Savings and Social Fund Management System API
 
@@ -135,7 +135,7 @@ curl -I http://localhost:3000/api/login
 3. Enter credentials:
    ```json
    {
-     "email": "admin@tctssf.rw",
+     "email": "admin@rdbsls.rw",
      "password": "admin123"
    }
    ```

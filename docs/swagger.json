@@ -1,11 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Teachers' Cooperative Savings and Social Fund Management System API",
-        "title": "TCTSSF API",
+        "description": "RDB Staff Loan System - Savings and Loan Management System API",
+        "title": "RDB SLS API",
         "contact": {
             "name": "API Support",
-            "email": "support@tctssf.rw"
+            "email": "support@rdbsls.rw"
         },
         "license": {
             "name": "MIT"
@@ -111,6 +111,9 @@
                 },
                 "is_active": {
                     "type": "boolean"
+                },
+                "joined_date": {
+                    "type": "string"
                 },
                 "last_name": {
                     "type": "string"

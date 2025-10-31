@@ -1,4 +1,4 @@
-# TCTSSF - Final Status Report
+# RDB SLS - Final Status Report
 
 ## ✅ All Issues Resolved!
 
@@ -50,7 +50,7 @@ cd /root/go-projects/tctssf
 # 3. Test the API
 # - Click on POST /api/login
 # - Click "Try it out"
-# - Enter: {"email": "admin@tctssf.rw", "password": "admin123"}
+# - Enter: {"email": "admin@rdbsls.rw", "password": "admin123"}
 # - Click "Execute"
 ```
 
@@ -152,15 +152,15 @@ MD5: 2d582dae6fe07928d63f25a97b7a832e
 ### Default Credentials
 ```
 Superadmin:
-  Email: superadmin@tctssf.rw
+  Email: superadmin@rdbsls.rw
   Password: admin123
 
 Admin:
-  Email: admin@tctssf.rw
+  Email: admin@rdbsls.rw
   Password: admin123
 
 Treasurer:
-  Email: treasurer@tctssf.rw
+  Email: treasurer@rdbsls.rw
   Password: treasurer123
 ```
 
@@ -180,7 +180,7 @@ Treasurer:
    ```
 
 3. **You Should See**
-   - Title: "TCTSSF API"
+   - Title: "RDB SLS API"
    - Version: "1.0"
    - One endpoint: POST /api/login
 
