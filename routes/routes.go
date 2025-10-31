@@ -103,9 +103,10 @@ func SetupRoutes(
 	app.Get("/test-static", func(c *fiber.Ctx) error {
 		return c.SendString("Static file handler is working!")
 	})
-	
+
 	// Static files handler (must be last) - NO AUTH REQUIRED FOR HTML FILES
-	app.Use(serveStaticFiles)
+	// Register as catch-all route instead of middleware
+	app.Get("/*", serveStaticFiles)
 	
 	log.Println("Routes configured successfully")
 	log.Println("Static file directory: ./frontend")
@@ -117,16 +118,11 @@ func SetupRoutes(
 }
 
 // serveStaticFiles handles static file serving with SPA support
+// This is now a catch-all route handler, not middleware
 func serveStaticFiles(c *fiber.Ctx) error {
 	path := c.Path()
 
 	log.Printf("Static file request for path: %s", path)
-
-	// Skip Swagger routes - they should be handled by Swagger middleware
-	if strings.HasPrefix(path, "/swagger") {
-		log.Printf("Swagger route detected, passing to Swagger handler: %s", path)
-		return c.Next()
-	}
 
 	// Handle root path
 	if path == "/" {
@@ -134,16 +130,10 @@ func serveStaticFiles(c *fiber.Ctx) error {
 		return c.SendFile("./frontend/index.html")
 	}
 
-	// Check if it's an API call
-	if strings.HasPrefix(path, "/api/") {
-		log.Printf("API call detected, passing to next handler: %s", path)
-		return c.Next()
-	}
-	
 	// Try to serve the requested file
 	filePath := filepath.Join("./frontend", path)
 	log.Printf("Attempting to serve file: %s", filePath)
-	
+
 	// Check if file exists
 	if _, err := http.Dir("./frontend").Open(path); err == nil {
 		log.Printf("File found, serving: %s", filePath)
@@ -151,13 +141,13 @@ func serveStaticFiles(c *fiber.Ctx) error {
 	} else {
 		log.Printf("File not found: %s, error: %v", filePath, err)
 	}
-	
+
 	// For HTML routes that don't exist as files, serve index.html (SPA behavior)
 	if strings.HasSuffix(path, ".html") || !strings.Contains(path, ".") {
 		log.Printf("HTML file not found, serving index.html for SPA: %s", path)
 		return c.SendFile("./frontend/index.html")
 	}
-	
+
 	// For other missing files, return 404
 	log.Printf("File not found, returning 404: %s", path)
 	return c.Status(404).SendString("File not found")

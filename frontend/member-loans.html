@@ -485,6 +485,15 @@
         </div>
     </div>
 
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>
+                <i class="fas fa-copyright"></i>
+                <span id="currentYear"></span> RDB SLS. All rights reserved.
+            </p>
+        </footer>
+    </div>
+
     <script>
         // Check if API_BASE already exists, if not declare it
         if (typeof API_BASE === 'undefined') {
@@ -880,6 +889,11 @@
             localStorage.removeItem('token');
             window.location.href = 'login.html';
         }
+    </script>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>

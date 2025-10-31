@@ -837,8 +837,43 @@ body {
     .form-row {
         gap: 12px;
     }
-    
+
     .filters-actions {
         gap: 8px;
+    }
+}
+
+/* Footer Styles */
+.dashboard-footer {
+    background: white;
+    padding: 20px 32px;
+    border-radius: 12px;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+    margin-top: 40px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    color: #718096;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.dashboard-footer p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dashboard-footer i {
+    color: #667eea;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-footer {
+        padding: 16px 20px;
+        font-size: 13px;
+        margin-top: 32px;
     }
 }

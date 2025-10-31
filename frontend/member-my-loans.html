@@ -289,6 +289,15 @@
         </div>
     </div>
 
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>
+                <i class="fas fa-copyright"></i>
+                <span id="currentYear"></span> RDB SLS. All rights reserved.
+            </p>
+        </footer>
+    </div>
+
     <script>
         // Simple, direct approach - exactly like the debug test
         const API_BASE = '/api';
@@ -473,6 +482,11 @@
             loadUserProfile();
             loadLoans();
         });
+    </script>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>

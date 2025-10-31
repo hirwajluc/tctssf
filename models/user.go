@@ -12,6 +12,7 @@ type User struct {
 	Phone         string    `json:"phone"`
 	Role          string    `json:"role"`
 	CreatedAt     time.Time `json:"created_at"`
+	JoinedDate    *string   `json:"joined_date,omitempty"`
 	IsActive      bool      `json:"is_active"`
 }
 
@@ -43,6 +44,7 @@ type CreateUserRequest struct {
 	Phone             string  `json:"phone"`
 	Role              string  `json:"role"`
 	MonthlyCommitment float64 `json:"monthly_commitment,omitempty"`
+	JoinedDate        string  `json:"joined_date,omitempty"`
 }
 
 // UpdateUserRequest for updating users

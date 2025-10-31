@@ -409,6 +409,15 @@
         </div>
     </div>
 
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>
+                <i class="fas fa-copyright"></i>
+                <span id="currentYear"></span> RDB SLS. All rights reserved.
+            </p>
+        </footer>
+    </div>
+
     <script>
         // Check if API_BASE already exists, if not declare it
         if (typeof API_BASE === 'undefined') {
@@ -814,6 +823,11 @@ Michael,Wilson,michael.wilson@example.com,+250788555666,20000`;
                 clearFile: typeof window.clearFile
             });
         });
+    </script>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ type CreateMemberRequest struct {
 	Email             string  `json:"email"`
 	Phone             string  `json:"phone"`
 	MonthlyCommitment float64 `json:"monthly_commitment"`
+	JoinedDate        string  `json:"joined_date,omitempty"`
 }
 
 // BulkMemberData represents a single member in bulk import

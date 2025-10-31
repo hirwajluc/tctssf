@@ -44,9 +44,9 @@ func (ac *AdminController) CreateMember(c *fiber.Ctx) error {
 	defer tx.Rollback()
 	
 	result, err := tx.Exec(`
-		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role) 
-		VALUES (?, ?, ?, ?, ?, ?, 'member')`,
-		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword))
+		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role, joined_date)
+		VALUES (?, ?, ?, ?, ?, ?, 'member', ?)`,
+		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword), req.JoinedDate)
 	
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Failed to create member"})
@@ -70,7 +70,7 @@ func (ac *AdminController) CreateMember(c *fiber.Ctx) error {
 
 // GetMembers returns all members
 func (ac *AdminController) GetMembers(c *fiber.Ctx) error {
-	rows, err := ac.db.Query(`SELECT id, account_number, first_name, last_name, email, phone, created_at, is_active FROM users WHERE role = 'member'`)
+	rows, err := ac.db.Query(`SELECT id, account_number, first_name, last_name, email, phone, created_at, joined_date, is_active FROM users WHERE role = 'member'`)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Database error"})
 	}
@@ -80,8 +80,9 @@ func (ac *AdminController) GetMembers(c *fiber.Ctx) error {
 	for rows.Next() {
 		var member models.User
 		var phone sql.NullString
-		
-		err := rows.Scan(&member.ID, &member.AccountNumber, &member.FirstName, &member.LastName, &member.Email, &phone, &member.CreatedAt, &member.IsActive)
+		var joinedDate sql.NullString
+
+		err := rows.Scan(&member.ID, &member.AccountNumber, &member.FirstName, &member.LastName, &member.Email, &phone, &member.CreatedAt, &joinedDate, &member.IsActive)
 		if err != nil {
 			continue // Skip rows with errors
 		}
@@ -92,7 +93,12 @@ func (ac *AdminController) GetMembers(c *fiber.Ctx) error {
 		} else {
 			member.Phone = ""
 		}
-		
+
+		// Convert NullString to pointer for joined_date
+		if joinedDate.Valid {
+			member.JoinedDate = &joinedDate.String
+		}
+
 		members = append(members, member)
 	}
 	
@@ -161,9 +167,9 @@ func (ac *AdminController) CreateUser(c *fiber.Ctx) error {
 	defer tx.Rollback()
 	
 	result, err := tx.Exec(`
-		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role) 
-		VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword), req.Role)
+		INSERT INTO users (account_number, first_name, last_name, email, phone, password_hash, role, joined_date)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		accountNumber, req.FirstName, req.LastName, req.Email, req.Phone, string(hashedPassword), req.Role, req.JoinedDate)
 	
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Failed to create user"})
